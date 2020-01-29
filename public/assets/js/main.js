@@ -80,100 +80,6 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
 /**********************************************************/
 
-APP.service('$clientService', ['$http', function ($http) {
-
-    var self = this;
-
-    const path = "http://localhost:8094/rocky-marciano" + '/clients';
-
-    self.getAll = function() {
-        return $http.get(path);
-    };
-
-    self.save = function (client) {
-        return $http.post(path, client);
-    };
-
-    self.get = function (id) {
-        return $http.get(path + '/' + id);
-    };
-
-    self.delete = function (client) {
-        $http.delete(path + '/' + client.id).then(function (success) {
-            console.log('deleted: ', client.id)
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-}]);
-
-/**********************************************************/
-
-APP.service('$sportService', ['$http', function ($http) {
-
-    var self = this;
-
-    const path = "http://localhost:8094/rocky-marciano" + '/sports';
-
-    self.sports  = [];
-
-    self.getAll = function() {
-        return $http.get(path);
-    };
-
-    self.sports = self.getAll();
-
-    self.save = function (sport) {
-        $http.post(path, sport).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-    self.delete = function (sport) {
-        $http.delete(path + '/' + sport.name).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-}]);
-
-/**********************************************************/
-
-APP.service('$subscriptionService', ['$http', function ($http) {
-
-    var self = this;
-
-    const path = "http://localhost:8094/rocky-marciano" + '/subscription';
-
-    self.save = function (subscription) {
-        return $http.post(path, subscription);
-    };
-
-    self.get = function (id) {
-        return $http.get(path + '/' + id);
-    };
-
-    self.getByClientId = function (id) {
-        return $http.get(path + '/client/' + id);
-    };
-
-    self.delete = function (subscription) {
-        $http.delete(path + '/' + subscription.id).then(function (success) {
-            console.log('deleted: ', subscription.id)
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-}]);
-
-/**********************************************************/
-
 APP.controller('AttivitaController', ['$scope', '$stateParams', '$state', '$http', '$sportService',
     function($scope, $stateParams, $state, $http, $sportService) {
 
@@ -306,6 +212,22 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
         return field != undefined && field != '';
     }
 
+    $scope.uploadFile = function(files) {
+        var fd = new FormData();
+        //Take the first selected file
+        fd.append("image", files[0]);
+
+        $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image', fd, {
+            headers: {'Content-Type': undefined },
+            transformRequest: angular.identity
+        }).then(function (success) {
+            console.log(success);
+        }, function (error) {
+            console.log(error);
+        })
+
+    };
+
     $scope.sports = $sportService.sports;
 
     }]);
@@ -366,6 +288,100 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
         }
 
     }]);
+
+/**********************************************************/
+
+APP.service('$clientService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = "http://localhost:8094/rocky-marciano" + '/clients';
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.save = function (client) {
+        return $http.post(path, client);
+    };
+
+    self.get = function (id) {
+        return $http.get(path + '/' + id);
+    };
+
+    self.delete = function (client) {
+        $http.delete(path + '/' + client.id).then(function (success) {
+            console.log('deleted: ', client.id)
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
+
+/**********************************************************/
+
+APP.service('$sportService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = "http://localhost:8094/rocky-marciano" + '/sports';
+
+    self.sports  = [];
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.sports = self.getAll();
+
+    self.save = function (sport) {
+        $http.post(path, sport).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+    self.delete = function (sport) {
+        $http.delete(path + '/' + sport.name).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
+
+/**********************************************************/
+
+APP.service('$subscriptionService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = "http://localhost:8094/rocky-marciano" + '/subscription';
+
+    self.save = function (subscription) {
+        return $http.post(path, subscription);
+    };
+
+    self.get = function (id) {
+        return $http.get(path + '/' + id);
+    };
+
+    self.getByClientId = function (id) {
+        return $http.get(path + '/client/' + id);
+    };
+
+    self.delete = function (subscription) {
+        $http.delete(path + '/' + subscription.id).then(function (success) {
+            console.log('deleted: ', subscription.id)
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
 
 /**********************************************************/
 
