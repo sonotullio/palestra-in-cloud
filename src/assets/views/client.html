@@ -1,0 +1,66 @@
+<div class="jumbotron text-center">
+    <h3>Scheda di {{client.name}}</h3>
+
+    <form class="row">
+
+        <div class="col-lg-offset-4 col-lg-4">
+
+            <!-- Nome -->
+            <div class="form-group">
+                <span class="my-label"> Nome </span>
+                <input ng-model="client.name" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- Cognome -->
+            <div class="form-group">
+                <span class="my-label"> Cognome </span>
+                <input ng-model="client.surname" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- CF -->
+            <div class="form-group">
+                <span class="my-label"> Codice Fiscale </span>
+                <input ng-model="client.cf" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <span class="my-label"> Email </span>
+                <input ng-model="client.email" class="form-control my-input" type="email" required/>
+            </div>
+
+            <!-- Cellulare -->
+            <div class="form-group">
+                <span class="my-label"> Cellulare </span>
+                <input ng-model="client.phone" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- Data di Nascita -->
+            <div class="form-group">
+                <span class="my-label"> Data di nascita (AAAA-MM-GG)</span>
+                <input ng-model="client.dateOfBirth" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- Luogo Di Nascita -->
+            <div class="form-group">
+                <span class="my-label"> Luogo di nascita </span>
+                <input ng-model="client.birthPlace" class="form-control my-input" type="text" required/>
+            </div>
+
+            <!-- Sport -->
+            <div class="form-group">
+                <span class="my-label"> Attivita </span>
+                <select class="custom-select  my-input" ng-model="client.sport">
+                    <option ng-repeat="sport in sports" ng-value="sport.name"> {{sport.name}}</option>
+                </select>
+            </div>
+
+
+        <!-- Registra Cliente-->
+            <p><a class="btn btn-success btn-lg" ng-click="save(client)" role="button">Aggiorna</a></p>
+            <p><a class="btn btn-primary btn-lg" ng-click="subscription(client)" role="button">Gestione Abbonamento</a></p>
+
+        </div>
+    </form>
+
+</div>
