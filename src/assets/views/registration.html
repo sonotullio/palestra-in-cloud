@@ -1,53 +1,54 @@
-<form class="col-lg-offset-4 col-lg-4">
-    <!-- Nome -->
-    <div class="form-group">
-        <span class="my-label"> Nome </span>
-        <input ng-model="client.name" class="form-control" type="text" required/>
-    </div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-offset-2 col-lg-8">
+            <form name="form" novalidate class="form-validation">
+                <!-- Nome -->
+                <div class="form-group">
+                    <span> Nome: </span>
+                    <input ng-model="client.name" name="name" class="form-control" type="text" required/>
+                </div>
 
-    <!-- Cognome -->
-    <div class="form-group">
-        <span class="my-label"> Cognome </span>
-        <input ng-model="client.surname" class="form-control" type="text" required/>
-    </div>
+                <!-- Cognome -->
+                <div class="form-group">
+                    <span> Cognome: </span>
+                    <input ng-model="client.surname" class="form-control" type="text" required/>
+                </div>
 
-    <!-- CF -->
-    <div class="form-group">
-        <span class="my-label"> Codice Fiscale </span>
-        <input ng-model="client.cf" class="form-control" type="text" required/>
-    </div>
+                <!-- CF -->
+                <div class="form-group">
+                    <span> Codice Fiscale: </span>
+                    <input ng-model="client.cf" class="form-control" type="text" required/>
+                </div>
 
-    <!-- Email -->
-    <div class="form-group">
-        <span class="my-label"> Email </span>
-        <input ng-model="client.email" class="form-control" type="email" required/>
-    </div>
+                <!-- Email -->
+                <div class="form-group">
+                    <span> Email: </span>
+                    <input ng-model="client.email" class="form-control" type="email" required/>
+                </div>
 
-    <!-- Cellulare -->
-    <div class="form-group">
-        <span class="my-label"> Cellulare </span>
-        <input ng-model="client.phone" class="form-control" type="number" required/>
-    </div>
+                <!-- Cellulare -->
+                <div class="form-group">
+                    <span> Cellulare: </span>
+                    <input ng-model="client.phone" class="form-control" type="number" ng-minlength="10" ng-maxlength="10" required/>
+                </div>
 
-    <!-- Data di Nascita -->
-    <div class="form-group">
-        <span class="my-label"> Data di nascita </span>
-        <input ng-model="client.dateOfBirth" class="form-control" type="date" required/>
-    </div>
+                <!-- Data di Nascita -->
+                <div class="form-group">
+                    <span> Data di nascita: </span>
+                    <input ng-model="client.dateOfBirth" class="form-control" type="date" required/>
+                </div>
 
-    <!-- Luogo Di Nascita -->
-    <div class="form-group">
-        <span class="my-label"> Luogo di nascita </span>
-        <input ng-model="client.birthPlace" class="form-control" type="text" required/>
-    </div>
+                <!-- Luogo Di Nascita -->
+                <div class="form-group">
+                    <span> Luogo di nascita: </span>
+                    <input ng-model="client.birthPlace" class="form-control" type="text" required/>
+                </div>
 
-    <div class="form-group">
-        <span class="my-label"> Foto </span>
-        <input type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
+                <!-- Registra Cliente-->
+                <div class="nav justify-content-center">
+                    <button class="btn btn-danger" type="submit" ng-click="save(client)" [disabled]="!form.valid"> Registra Cliente</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <!-- Registra Cliente-->
-    <div class="nav justify-content-center">
-        <button class="btn btn-danger" type="submit" ng-click="save(client)"> Registra Cliente</button>
-    </div>
-</form>
+</div>

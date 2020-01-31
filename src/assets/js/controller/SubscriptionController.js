@@ -1,10 +1,11 @@
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$sce',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $sce) {
 
         $scope.clientId = $stateParams.clientId;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
         $subscriptionService.getByClientId($scope.clientId).then(function(success) {
@@ -50,5 +51,21 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             $scope.subscription.toDate = new Date(from);
             $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.durata );
         }
+
+        $scope.uploadFile = function(files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("image", files[0]);
+
+            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(function (success) {
+                console.log(success);
+            }, function (error) {
+                console.log(error);
+            })
+
+        };
 
     }]);

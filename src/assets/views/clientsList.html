@@ -3,33 +3,62 @@
         <thead>
         <tr>
             <th>id</th>
-            <th>nome</th>
-            <th>cognome</th>
-            <th>sport</th>
-            <th>abbonamento</th>
-            <th>certificato</th>
-            <th>email</th>
-            <th>cellulare</th>
-            <th>CF</th>
-            <th>Data</th>
-            <th>Luogo</th>
+            <th ng-click="sortColumn('nome')">nome</th>
+            <th ng-click="sortColumn('cognome')">cognome</th>
+            <th ng-click="sortColumn('sport')">sport</th>
+            <th ng-click="sortColumn('expirationDate')">abbonamento</th>
+            <th ng-click="sortColumn('expirationCertificateDate')">certificato</th>
+            <th ng-click="sortColumn('email')">email</th>
+            <th ng-click="sortColumn('phone')">cellulare</th>
+            <th ng-click="sortColumn('cf')">CF</th>
+            <th ng-click="sortColumn('dateOfBirth')">Data</th>
+            <th ng-click="sortColumn('birthPlace')">Luogo</th>
             <th>Note</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="client in clients" ng-class="{'warning': isAlert(client), 'danger' : isExpired(client)}" ui-sref="subscription({clientId: client.id})">
+        <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': isAlert(client), 'danger' : isExpired(client)}">
             <td>{{client.id}}</td>
-            <td>{{client.name}}</td>
-            <td>{{client.surname}}</td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.name}}</span>
+                <input ng-model="client.name" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.surname}}</span>
+                <input ng-model="client.surname" ng-show="client.isEditing"/>
+            </td>
             <td>{{client.sport}}</td>
             <td>{{client.expirationDate | date: 'dd/MM/yyyy'}}</td>
             <td>{{client.certificateExpirationDate | date: 'dd/MM/yyyy'}}</td>
-            <td>{{client.email}}</td>
-            <td>{{client.phone}}</td>
-            <td>{{client.cf}}</td>
-            <td>{{client.dateOfBirth}}</td>
-            <td>{{client.birthPlace}}</td>
-            <td>{{client.note}}</td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.email}}</span>
+                <input ng-model="client.email" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.phone}}</span>
+                <input ng-model="client.phone" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.cf}}</span>
+                <input ng-model="client.cf" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.dateOfBirth}}</span>
+                <input ng-model="client.dateOfBirth" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.birthPlace}}</span>
+                <input ng-model="client.birthPlace" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <span ng-show="!client.isEditing">{{client.note}}</span>
+                <input ng-model="client.note" ng-show="client.isEditing"/>
+            </td>
+            <td>
+                <button ng-show="!client.isEditing" ng-click="client.isEditing = true" class="btn btn-sm">Edit</button>
+                <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-info">Save</button>
+            </td>
         </tr>
         </tbody>
     </table>

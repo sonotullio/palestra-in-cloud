@@ -15,22 +15,6 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
         return field != undefined && field != '';
     }
 
-    $scope.uploadFile = function(files) {
-        var fd = new FormData();
-        //Take the first selected file
-        fd.append("image", files[0]);
-
-        $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image', fd, {
-            headers: {'Content-Type': undefined },
-            transformRequest: angular.identity
-        }).then(function (success) {
-            console.log(success);
-        }, function (error) {
-            console.log(error);
-        })
-
-    };
-
     $scope.sports = $sportService.sports;
 
     }]);

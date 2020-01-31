@@ -6800,11 +6800,6 @@ button.close {
 body {
   font-family: "Courier";
 }
-input:focus {
-  border-color: slateblue !important;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
-}
 .my-input {
   border: hidden;
   border-radius: 0;
@@ -6816,4 +6811,13 @@ input:focus {
   color: grey;
   font-size: 14px;
   padding: 6px 12px;
+}
+.form-validation {
+  text-align: center;
+}
+.form-validation input.ng-invalid.ng-touched {
+  border-color: #FA787E;
+}
+.form-validation input.ng-valid.ng-touched {
+  border-color: #78FA89;
 }

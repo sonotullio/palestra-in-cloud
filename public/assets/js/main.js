@@ -44,6 +44,13 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             templateUrl: 'registration.html'
         }
 
+        var spesa = {
+            name: 'spesa',
+            url: '/spesa',
+            controller: 'SpesaController',
+            templateUrl: 'spesa.html'
+        }
+
         var clientsList = {
             name: 'clientsList',
             url: '/clients',
@@ -69,12 +76,21 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             controller: 'AttivitaController',
         }
 
+        var contabilita = {
+            name: 'contabilita',
+            url: '/contabilita',
+            templateUrl: 'contabilita.html',
+            controller: 'ContabilitaController',
+        }
+
         $stateProvider.state(home);
         $stateProvider.state(login);
         $stateProvider.state(registration);
+        $stateProvider.state(spesa);
         $stateProvider.state(clientsList);
         $stateProvider.state(subscription);
         $stateProvider.state(attivita);
+        $stateProvider.state(contabilita);
 
     }]);
 
@@ -127,14 +143,16 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', '$http',
 
 /**********************************************************/
 
-APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http',
-    function($scope, $rootScope, $stateParams, $state, $http) {
+APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', '$clientService', '$columnService',
+    function($scope, $rootScope, $stateParams, $state, $http, $clientService, $columnService) {
 
         $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
             $scope.clients = success.data;
         }, function (error) {
             console.log('error: ', error);
         });
+
+        $scope.search = $rootScope.search;
 
         $scope.isExpired = function (client) {
             return client.expirationDate == undefined || client.expirationDate < $rootScope.date || client.certificateExpirationDate == undefined || client.certificateExpirationDate < $rootScope.date
@@ -146,6 +164,27 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
             date = new Date(date);
             return new Date(client.expirationDate) < date || new Date(client.certificateExpirationDate) < date;
         }
+
+        $scope.updateClient = function (client) {
+            client.isEditing = false;
+            $clientService.save(client);
+        }
+
+        $scope.sortColumn = function (col) {
+            $columnService.sortColumn($scope, col);
+        }
+    }]);
+
+/**********************************************************/
+
+APP.controller('ContabilitaController', ['$scope', '$rootScope', '$stateParams', '$state', '$http',
+    function($scope, $rootScope, $stateParams, $state, $http) {
+
+        $http.get("http://localhost:8094/rocky-marciano" + '/contabilita').then(function (success) {
+            $scope.cashflows = success.data;
+        }, function (error) {
+            console.log('error: ', error);
+        });
 
     }]);
 
@@ -170,6 +209,10 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
 
         $rootScope.date = new Date();
         $scope.date = $rootScope.date;
+
+        $scope.$watch('search', function (newValue, oldValue) {
+
+        }, true);
 
     }]);
 
@@ -212,35 +255,38 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
         return field != undefined && field != '';
     }
 
-    $scope.uploadFile = function(files) {
-        var fd = new FormData();
-        //Take the first selected file
-        fd.append("image", files[0]);
-
-        $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image', fd, {
-            headers: {'Content-Type': undefined },
-            transformRequest: angular.identity
-        }).then(function (success) {
-            console.log(success);
-        }, function (error) {
-            console.log(error);
-        })
-
-    };
-
     $scope.sports = $sportService.sports;
 
     }]);
 
 /**********************************************************/
 
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService) {
+APP.controller('SpesaController', ['$scope', '$stateParams','$state', '$http', '$filter',
+    function($scope, $stateParams, $state, $http, $filter) {
+
+    $scope.transaction = {};
+
+    $scope.save = function (spesa) {
+        $http.post("http://localhost:8094/rocky-marciano" + '/transactions', spesa).then(function (success) {
+            $state.go('contabilita');
+        }, function (error) {
+            console.log('error: ', error);
+        })
+
+    }
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$sce',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $sce) {
 
         $scope.clientId = $stateParams.clientId;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
         $subscriptionService.getByClientId($scope.clientId).then(function(success) {
@@ -287,6 +333,22 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.durata );
         }
 
+        $scope.uploadFile = function(files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("image", files[0]);
+
+            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(function (success) {
+                console.log(success);
+            }, function (error) {
+                console.log(error);
+            })
+
+        };
+
     }]);
 
 /**********************************************************/
@@ -318,6 +380,22 @@ APP.service('$clientService', ['$http', function ($http) {
     }
 
 }]);
+
+/**********************************************************/
+
+APP.service('$columnService', [ function () {
+
+    var self = this;
+
+    self.sortColumn = function ($scope, col) {
+        $scope.column = col;
+        $scope.reverse = !$scope.reverse;
+    };
+
+}]);
+
+
+
 
 /**********************************************************/
 

@@ -1,13 +1,22 @@
 <div class="jumbotron text-center">
-    <h3>Gestione Abbonamento {{client.name}}</h3>
+    <h3 class="form-group">Gestione Abbonamento: {{client.name}} {{client.surname}}</h3>
 
-    <div>
+    <div class="form-group">
+        <img id="img" src="" style="width:200px;height:200px;" />
+    </div>
+
+    <div class="form-group">
         <div class="row">
             Data scadenza abbonamento: {{lastSubscription.toDate | date: 'dd/MM/yyyy'}} <a class="btn btn-primary" ng-click="rinnova('#subscription')">Rinnova</a>
         </div>
         <div class="row">
             Data scadenza certificato: {{client.certificateExpirationDate | date: 'dd/MM/yyyy'}} <a class="btn btn-primary" ng-click="rinnova('#certificate')">Rinnova</a>
         </div>
+    </div>
+
+    <div>
+        <span class="my-label center-block text-center"> Carica Foto </span>
+        <input class="center-block text-center" type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
     </div>
 
     <!-- Subscription Modal -->

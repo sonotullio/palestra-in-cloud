@@ -1,0 +1,26 @@
+<form class="col-lg-offset-4 col-lg-4">
+
+    <!-- Data -->
+    <div class="form-group">
+        <span class="my-label"> Data </span>
+        <input ng-model="transaction.date" class="form-control" type="date" required/>
+    </div>
+
+    <!-- Importo -->
+    <div class="form-group">
+        <span class="my-label"> Importo </span>
+        <input ng-model="transaction.price" class="form-control" type="text" required/>
+    </div>
+
+    <!-- Descrizione -->
+    <div class="form-group">
+        <span class="my-label"> Descrizione </span>
+        <input ng-model="transaction.description" class="form-control" type="text" required/>
+    </div>
+
+    <!-- Registra Cliente-->
+    <div class="nav justify-content-center">
+        <button class="btn btn-danger" type="submit" ng-click="save(transaction)"> Salva </button>
+    </div>
+
+</form>

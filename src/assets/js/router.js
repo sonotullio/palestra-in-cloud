@@ -22,6 +22,13 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             templateUrl: 'registration.html'
         }
 
+        var spesa = {
+            name: 'spesa',
+            url: '/spesa',
+            controller: 'SpesaController',
+            templateUrl: 'spesa.html'
+        }
+
         var clientsList = {
             name: 'clientsList',
             url: '/clients',
@@ -47,11 +54,20 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             controller: 'AttivitaController',
         }
 
+        var contabilita = {
+            name: 'contabilita',
+            url: '/contabilita',
+            templateUrl: 'contabilita.html',
+            controller: 'ContabilitaController',
+        }
+
         $stateProvider.state(home);
         $stateProvider.state(login);
         $stateProvider.state(registration);
+        $stateProvider.state(spesa);
         $stateProvider.state(clientsList);
         $stateProvider.state(subscription);
         $stateProvider.state(attivita);
+        $stateProvider.state(contabilita);
 
     }]);
