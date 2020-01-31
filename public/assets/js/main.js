@@ -156,35 +156,45 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $scope.isExpired = function (client) {
             return client.expirationDate == undefined || client.expirationDate < $rootScope.date || client.certificateExpirationDate == undefined || client.certificateExpirationDate < $rootScope.date
-        }
+        };
 
         $scope.isAlert = function (client) {
             var date = new Date($rootScope.date);
             date = date.setDate(date.getDate() + 7);
             date = new Date(date);
             return new Date(client.expirationDate) < date || new Date(client.certificateExpirationDate) < date;
-        }
+        };
 
         $scope.updateClient = function (client) {
-            client.isEditing = false;
+            $scope.edit(client);
             $clientService.save(client);
-        }
+        };
 
         $scope.sortColumn = function (col) {
             $columnService.sortColumn($scope, col);
-        }
+        };
+
+        $scope.edit = function (client) {
+            client.isEditing = !client.isEditing;
+            $scope.isEditingDisabled = !$scope.isEditingDisabled;
+        };
+
     }]);
 
 /**********************************************************/
 
-APP.controller('ContabilitaController', ['$scope', '$rootScope', '$stateParams', '$state', '$http',
-    function($scope, $rootScope, $stateParams, $state, $http) {
+APP.controller('ContabilitaController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', '$columnService',
+    function($scope, $rootScope, $stateParams, $state, $http, $columnService) {
 
         $http.get("http://localhost:8094/rocky-marciano" + '/contabilita').then(function (success) {
             $scope.cashflows = success.data;
         }, function (error) {
             console.log('error: ', error);
         });
+
+        $scope.sortColumn = function (col) {
+            $columnService.sortColumn($scope, col);
+        };
 
     }]);
 
@@ -209,10 +219,6 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
 
         $rootScope.date = new Date();
         $scope.date = $rootScope.date;
-
-        $scope.$watch('search', function (newValue, oldValue) {
-
-        }, true);
 
     }]);
 

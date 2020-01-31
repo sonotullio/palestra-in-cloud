@@ -18,8 +18,4 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
         $rootScope.date = new Date();
         $scope.date = $rootScope.date;
 
-        $scope.$watch('search', function (newValue, oldValue) {
-
-        }, true);
-
     }]);

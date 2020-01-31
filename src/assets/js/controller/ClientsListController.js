@@ -11,21 +11,27 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $scope.isExpired = function (client) {
             return client.expirationDate == undefined || client.expirationDate < $rootScope.date || client.certificateExpirationDate == undefined || client.certificateExpirationDate < $rootScope.date
-        }
+        };
 
         $scope.isAlert = function (client) {
             var date = new Date($rootScope.date);
             date = date.setDate(date.getDate() + 7);
             date = new Date(date);
             return new Date(client.expirationDate) < date || new Date(client.certificateExpirationDate) < date;
-        }
+        };
 
         $scope.updateClient = function (client) {
-            client.isEditing = false;
+            $scope.edit(client);
             $clientService.save(client);
-        }
+        };
 
         $scope.sortColumn = function (col) {
             $columnService.sortColumn($scope, col);
-        }
+        };
+
+        $scope.edit = function (client) {
+            client.isEditing = !client.isEditing;
+            $scope.isEditingDisabled = !$scope.isEditingDisabled;
+        };
+
     }]);

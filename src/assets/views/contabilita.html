@@ -2,13 +2,13 @@
     <table class="table table-hover">
         <thead>
         <tr>
-            <th>Importo</th>
-            <th>Data</th>
-            <th>Descrizione</th>
+            <th ng-click="sortColumn('price')">Importo</th>
+            <th ng-click="sortColumn('date')">Data</th>
+            <th ng-click="sortColumn('description')">Descrizione</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="cashflow in cashflows">
+        <tr ng-repeat="cashflow in cashflows | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
             <td>{{cashflow.price | number: 2}}</td>
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
             <td>{{cashflow.description}}</td>

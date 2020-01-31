@@ -1,4 +1,4 @@
-<div>
+<form name="myForm" novalidate>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -18,48 +18,48 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': isAlert(client), 'danger' : isExpired(client)}">
-            <td>{{client.id}}</td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.name}}</span>
-                <input ng-model="client.name" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.surname}}</span>
-                <input ng-model="client.surname" ng-show="client.isEditing"/>
-            </td>
-            <td>{{client.sport}}</td>
-            <td>{{client.expirationDate | date: 'dd/MM/yyyy'}}</td>
-            <td>{{client.certificateExpirationDate | date: 'dd/MM/yyyy'}}</td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.email}}</span>
-                <input ng-model="client.email" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.phone}}</span>
-                <input ng-model="client.phone" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.cf}}</span>
-                <input ng-model="client.cf" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.dateOfBirth}}</span>
-                <input ng-model="client.dateOfBirth" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.birthPlace}}</span>
-                <input ng-model="client.birthPlace" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <span ng-show="!client.isEditing">{{client.note}}</span>
-                <input ng-model="client.note" ng-show="client.isEditing"/>
-            </td>
-            <td>
-                <button ng-show="!client.isEditing" ng-click="client.isEditing = true" class="btn btn-sm">Edit</button>
-                <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-info">Save</button>
-            </td>
-        </tr>
+            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': isAlert(client), 'danger' : isExpired(client)}">
+                <td>{{client.id}}</td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.name}}</span>
+                    <input ng-model="client.name" ng-show="client.isEditing" class="form-control" required/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.surname}}</span>
+                    <input ng-model="client.surname" ng-show="client.isEditing" class="form-control" required/>
+                </td>
+                <td>{{client.sport}}</td>
+                <td>{{client.expirationDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{client.certificateExpirationDate | date: 'dd/MM/yyyy'}}</td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.email}}</span>
+                    <input ng-model="client.email" ng-show="client.isEditing" class="form-control"/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.phone}}</span>
+                    <input ng-model="client.phone" ng-show="client.isEditing" class="form-control" ng-minlength="10" ng-maxlength="10" required/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.cf}}</span>
+                    <input ng-model="client.cf" ng-show="client.isEditing" class="form-control" ng-minlength="16" ng-maxlength="16" required/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.dateOfBirth}}</span>
+                    <input ng-model="client.dateOfBirth" ng-show="client.isEditing" class="form-control" required/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.birthPlace}}</span>
+                    <input ng-model="client.birthPlace" ng-show="client.isEditing" class="form-control" required/>
+                </td>
+                <td>
+                    <span ng-show="!client.isEditing">{{client.note}}</span>
+                    <input ng-model="client.note" ng-show="client.isEditing" class="form-control"/>
+                </td>
+                <td>
+                    <button ng-show="!client.isEditing" ng-click="edit(client)" ng-disabled="isEditingDisabled" class="btn btn-sm">Edit</button>
+                    <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-info" type="submit" ng-disabled="!myForm.$valid" >Save</button>
+                </td>
+            </tr>
         </tbody>
     </table>
-</div>
+</form>
