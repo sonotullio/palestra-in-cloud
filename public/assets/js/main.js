@@ -148,22 +148,14 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
             $scope.clients = success.data;
+            $scope.clients.forEach(function (client) {
+                $clientService.setStatus(client, $rootScope.date);
+            })
         }, function (error) {
             console.log('error: ', error);
         });
 
         $scope.search = $rootScope.search;
-
-        $scope.isExpired = function (client) {
-            return client.expirationDate == undefined || client.expirationDate < $rootScope.date || client.certificateExpirationDate == undefined || client.certificateExpirationDate < $rootScope.date
-        };
-
-        $scope.isAlert = function (client) {
-            var date = new Date($rootScope.date);
-            date = date.setDate(date.getDate() + 7);
-            date = new Date(date);
-            return new Date(client.expirationDate) < date || new Date(client.certificateExpirationDate) < date;
-        };
 
         $scope.updateClient = function (client) {
             $scope.edit(client);
@@ -285,13 +277,14 @@ APP.controller('SpesaController', ['$scope', '$stateParams','$state', '$http', '
 
 /**********************************************************/
 
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$sce',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $sce) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope) {
 
         $scope.clientId = $stateParams.clientId;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            $clientService.setStatus($scope.client, $rootScope.date);
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
@@ -339,6 +332,14 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.durata );
         }
 
+        $scope.isAlert = function(date) {
+            return $clientService.isAlert(new Date(date), $rootScope.date);
+        }
+
+        $scope.isExpired = function(date) {
+            return $clientService.isExpired(new Date(date), $rootScope.date);
+        }
+
         $scope.uploadFile = function(files) {
             var fd = new FormData();
             //Take the first selected file
@@ -365,6 +366,16 @@ APP.service('$clientService', ['$http', function ($http) {
 
     const path = "http://localhost:8094/rocky-marciano" + '/clients';
 
+    var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    self.dateDiffInDays = function (a, b) {
+        // Esclude l'ora ed il fuso orario
+        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+        return (utc1 - utc2) / _MS_PER_DAY;
+    }
+
     self.getAll = function() {
         return $http.get(path);
     };
@@ -383,6 +394,40 @@ APP.service('$clientService', ['$http', function ($http) {
         }, function (error) {
             console.log(error);
         });
+    }
+
+    self.setStatus = function (client, date) {
+        if (client.expirationDate == undefined || client.certificateExpirationDate == undefined) {
+            client.isExpired = true;
+        } else {
+            if (self.dateDiffInDays(new Date(client.expirationDate), date) >= 0 && self.dateDiffInDays(new Date(client.expirationDate), date) < 8 || self.dateDiffInDays(new Date(client.certificateExpirationDate), date) >= 0 && self.dateDiffInDays(new Date(client.certificateExpirationDate), date) < 8 ) {
+                client.isAlert = true;
+            }
+
+            if (self.dateDiffInDays(new Date(client.expirationDate), date) < 0 || self.dateDiffInDays(new Date(client.certificateExpirationDate), date) < 0 ) {
+                client.isAlert = false;
+                client.isExpired = true;
+            }
+        }
+    }
+
+    self.isExpired = function (date, limitDate) {
+        if (date == undefined) {
+            return true;
+        } else {
+            if (self.dateDiffInDays(date, limitDate) < 0) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    self.isAlert = function (date, limitDate) {
+        if (self.dateDiffInDays(date, limitDate) >= 0 && self.dateDiffInDays(date, limitDate) < 8) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }]);

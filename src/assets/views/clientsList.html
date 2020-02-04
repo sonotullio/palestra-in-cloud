@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': isAlert(client), 'danger' : isExpired(client)}">
+            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': client.isAlert, 'danger' : client.isExpired}">
                 <td>{{client.id}}</td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.name}}</span>
@@ -56,8 +56,8 @@
                     <input ng-model="client.note" ng-show="client.isEditing" class="form-control"/>
                 </td>
                 <td>
-                    <button ng-show="!client.isEditing" ng-click="edit(client)" ng-disabled="isEditingDisabled" class="btn btn-sm">Edit</button>
-                    <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-info" type="submit" ng-disabled="!myForm.$valid" >Save</button>
+                    <button ng-show="!client.isEditing" ng-click="edit(client)" ng-disabled="isEditingDisabled" class="btn btn-sm btn-info">Edit</button>
+                    <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-success" type="submit" ng-disabled="!myForm.$valid" >Save</button>
                 </td>
             </tr>
         </tbody>

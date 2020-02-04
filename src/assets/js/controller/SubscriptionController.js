@@ -1,10 +1,11 @@
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$sce',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $sce) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope) {
 
         $scope.clientId = $stateParams.clientId;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            $clientService.setStatus($scope.client, $rootScope.date);
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
@@ -50,6 +51,14 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
         $scope.changeFromDate = function (from) {
             $scope.subscription.toDate = new Date(from);
             $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.durata );
+        }
+
+        $scope.isAlert = function(date) {
+            return $clientService.isAlert(new Date(date), $rootScope.date);
+        }
+
+        $scope.isExpired = function(date) {
+            return $clientService.isExpired(new Date(date), $rootScope.date);
         }
 
         $scope.uploadFile = function(files) {

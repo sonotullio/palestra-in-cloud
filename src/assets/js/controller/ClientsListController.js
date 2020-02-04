@@ -3,22 +3,14 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
             $scope.clients = success.data;
+            $scope.clients.forEach(function (client) {
+                $clientService.setStatus(client, $rootScope.date);
+            })
         }, function (error) {
             console.log('error: ', error);
         });
 
         $scope.search = $rootScope.search;
-
-        $scope.isExpired = function (client) {
-            return client.expirationDate == undefined || client.expirationDate < $rootScope.date || client.certificateExpirationDate == undefined || client.certificateExpirationDate < $rootScope.date
-        };
-
-        $scope.isAlert = function (client) {
-            var date = new Date($rootScope.date);
-            date = date.setDate(date.getDate() + 7);
-            date = new Date(date);
-            return new Date(client.expirationDate) < date || new Date(client.certificateExpirationDate) < date;
-        };
 
         $scope.updateClient = function (client) {
             $scope.edit(client);
