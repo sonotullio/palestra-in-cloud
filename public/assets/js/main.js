@@ -109,6 +109,7 @@ APP.controller('AttivitaController', ['$scope', '$stateParams', '$state', '$http
 
         $scope.save = function (sport) {
             $sportService.save(sport);
+            $state.reload();
         }
 
         $scope.delete = function (sport) {

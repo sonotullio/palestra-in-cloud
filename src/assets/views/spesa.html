@@ -1,4 +1,4 @@
-<form class="col-lg-offset-4 col-lg-4">
+<form name="myForm" class="col-lg-offset-4 col-lg-4">
 
     <!-- Data -->
     <div class="form-group">
@@ -19,8 +19,8 @@
     </div>
 
     <!-- Registra Cliente-->
-    <div class="nav justify-content-center">
-        <button class="btn btn-danger" type="submit" ng-click="save(transaction)"> Salva </button>
+    <div class="form-group">
+        <button class="btn btn-danger" type="submit" ng-click="save(transaction)" ng-disabled="!myForm.$valid"> Salva </button>
     </div>
 
 </form>

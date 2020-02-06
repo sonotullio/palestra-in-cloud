@@ -6798,16 +6798,13 @@ button.close {
   }
 }
 body {
-  font-family: "Courier";
+  font-family: "Helvetica";
 }
 .form-validation {
   text-align: center;
 }
 .form-validation input.ng-invalid.ng-touched {
   border-color: #FA787E;
-}
-.form-validation input.ng-valid.ng-touched {
-  border-color: #78FA89;
 }
 .text-danger {
   color: #FA787E;
