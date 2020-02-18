@@ -1,10 +1,14 @@
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope', '$entranceService',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope, $entranceService) {
 
         $scope.clientId = $stateParams.clientId;
+        $scope.isHome = true;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            $entranceService.getAllByClientId($scope.client.id).then(function (success) {
+                $scope.entrances = $entranceService.getOfThisWeek(success.data);
+            });
             $clientService.setStatus($scope.client, $rootScope.date);
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
@@ -46,6 +50,19 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             $scope.subscription.durata = 1;
             $scope.changeFromDate($scope.subscription.fromDate);
             $(id).modal('toggle');
+        }
+
+        $scope.confermaIngresso = function(client) {
+            // if ($scope.entrances <= $scope.client.maxEntrance) {
+            //
+            // }
+            $http.post("http://localhost:8094/rocky-marciano" + '/entrances', {date: new Date(), client: client}).then(function (success) {
+                $('#ingresso').modal('toggle');
+                $scope.isHome = true;
+            }, function (error) {
+                console.log(error);
+                $scope.error = error
+            });
         }
 
         $scope.changeFromDate = function (from) {

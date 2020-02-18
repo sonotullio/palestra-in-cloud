@@ -1,100 +1,147 @@
-<div class="container">
-    <div class="jumbotron text-center">
-        <h3 class="form-group"> {{client.name}} {{client.surname}} </h3>
+<!-- Sezione Immagine Profilo -->
+<div class="uk-child-width-expand@s uk-text-center" uk-grid>
+    <div class="uk-width-1-6@m"></div>
+    <div class="uk-width-2-3@m uk-card uk-card-default uk-card-body">
+        <img id="img" class="profile-img" alt="" uk-img>
 
-        <div class="form-group">
-            <img id="img" src="" style="width:200px;height:200px;" />
-        </div>
+        <h3 class="uk-card-title"> {{client.name}} {{client.surname}}</h3>
 
-        <div class="form-group">
-            <div class="alert" ng-class="{'alert-warning': isAlert(client.expirationDate), 'alert-danger': isExpired(client.expirationDate)}" role="alert">
-                Data scadenza abbonamento:  {{client.expirationDate | date: 'dd/MM/yyyy'}} <a class="btn btn-primary" ng-click="rinnova('#subscription')">Rinnova</a>
+        <p>TIpologia di Abbonamento: {{client.sport}}</p>
+
+        <!-- Tab -->
+        <ul uk-tab>
+            <li ng-class="{'tab-active': isHome}"><a ng-click="isHome = true">Home</a></li>
+            <li ng-class="{'tab-active': !isHome}"><a ng-click="isHome = false">Ingressi</a></li>
+        </ul>
+
+        <!-- Sezione Dati Profilo -->
+        <div ng-show="isHome">
+
+            <!-- Abbonamento -->
+            <div ng-class="{'uk-alert-success': !isExpired(client.expirationDate), 'uk-alert-danger': isExpired(client.expirationDate)}" uk-alert>
+                <p>Data di scadenza abbonamento: {{client.expirationDate}}</p>
             </div>
-            <div class="alert" ng-class="{'alert-warning': isAlert(client.certificateExpirationDate), 'alert-danger': isExpired(client.certificateExpirationDate)}" role="alert">
-                Data scadenza certificato: {{client.certificateExpirationDate | date: 'dd/MM/yyyy'}} <a class="btn btn-primary" ng-click="rinnova('#certificate')">Rinnova</a>
-            </div>
-        </div>
 
-        <div class="alert text-center">
-            <button class="btn btn-sm btn-success">
+            <!-- Certificato -->
+            <div ng-class="{'uk-alert-success': !isExpired(client.certificateExpirationDate), 'uk-alert-danger': isExpired(client.certificateExpirationDate)}" ng-click="rinnova('#certificate')" uk-alert>
+                <p>Data di scadenza certificato medico: {{client.certificateExpirationDate}}</p>
+            </div>
+
+            <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #subscription">Abbonamento</button>
+            <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #certificate">Certificato</button>
+            <div class="js-upload" uk-form-custom>
                 <input id="file" class="inputfile" type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
-                <label for="file">Carica Foto</label>
-            </button>
+                <button class="uk-button uk-button-primary" type="button" tabindex="-1">Carica Foto</button>
+            </div>
+
         </div>
 
-        <!-- Subscription Modal -->
-        <div id="subscription" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Rinnova Abbonamento</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <!-- Durata -->
-                            <div class="form-group">
-                                <span class="my-label"> Durata: </span>
-                                <select class="custom-select  my-input" ng-model="subscription.durata" ng-change="changeFromDate(subscription.fromDate)">
-                                    <option ng-repeat="month in months" ng-value="month.value"> {{month.description}}</option>
-                                </select>
-                            </div>
+        <!-- Entrances -->
+        <div ng-show="!isHome">
 
-                            <!-- From -->
-                            <div class="form-group text-center">
-                                <span class="my-label"> Data di partenza: </span>
-                                <input ng-model="subscription.fromDate" ng-change="changeFromDate(subscription.fromDate)" class="form-control" type="date" required/>
-                            </div>
+            <!-- Tabella Ingressi -->
+            <table class="uk-table uk-table-hover uk-table-divider">
+                <thead>
+                <tr>
+                    <th class="uk-text-center">Data</th>
+                    <th class="uk-text-center">Azioni</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="row in entrances">
+                    <td>{{row.date}}</td>
+                    <td><button class="uk-button uk-button-danger" type="button">Rimuovi</button></td>
+                </tr>
+                </tbody>
+            </table>
 
-                            <div class="form-group">
-                                <span class="my-label"> Data di fine: </span>
-                                <span class="form-control"> {{subscription.toDate | date: 'dd/MM/yyyy'}} </span>
-                            </div>
+            <!-- Ingresso -->
+            <p class="uk-margin">
+                <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #ingresso">Ingresso</button>
+            </p>
+        </div>
+    </div>
+</div>
 
-                            <!-- Sport -->
-                            <div class="form-group">
-                                <span class="my-label"> Attivita </span>
-                                <select class="custom-select  my-input" ng-model="subscription.sport">
-                                    <option ng-repeat="sport in sports" ng-value="sport"> {{sport.name}}</option>
-                                </select>
-                            </div>
 
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" ng-click="save(subscription)">Save</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+<!-- Subscription Modal -->
+<div id="subscription" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Rinnovo Abbonamento</h2>
+        <p>...</p>
 
-        <!-- Certificate Modal -->
-        <div id="certificate" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Rinnova Certofocato</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form>
+        <form>
+            <!-- Durata -->
+            <div class="form-group">
+                <span class="my-label"> Durata: </span>
+                <select class="custom-select  my-input" ng-model="subscription.durata"
+                        ng-change="changeFromDate(subscription.fromDate)">
+                    <option ng-repeat="month in months" ng-value="month.value"> {{month.description}}</option>
+                </select>
+            </div>
 
-                            <!-- Date -->
-                            <div class="form-group text-center">
-                                <span class="my-label"> Data di scadenza: </span>
-                                <input ng-model="client.certificateExpirationDate" class="form-control" type="date" required/>
-                            </div>
+            <!-- From -->
+            <div class="form-group text-center">
+                <span class="my-label"> Data di partenza: </span>
+                <input ng-model="subscription.fromDate" ng-change="changeFromDate(subscription.fromDate)"
+                       class="form-control" type="date" required/>
+            </div>
 
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" ng-click="saveClient(client)">Save</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+            <div class="form-group">
+                <span class="my-label"> Data di fine: </span>
+                <span class="form-control"> {{subscription.toDate | date: 'dd/MM/yyyy'}} </span>
+            </div>
 
+            <!-- Sport -->
+            <div class="form-group">
+                <span class="my-label"> Attivita </span>
+                <select class="custom-select  my-input" ng-model="subscription.sport">
+                    <option ng-repeat="sport in sports" ng-value="sport"> {{sport.name}}</option>
+                </select>
+            </div>
+
+        </form>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-primary" type="button" ng-click="save(subscription)">Save</button>
+        </p>
+    </div>
+</div>
+
+<!-- Certificate Modal -->
+<div id="certificate" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Rinnovo Certificato</h2>
+        <p>...</p>
+
+        <form>
+
+            <!-- Date -->
+            <div class="form-group text-center">
+                <span class="my-label"> Data di scadenza: </span>
+                <input ng-model="client.certificateExpirationDate" class="form-control" type="date" required/>
+            </div>
+
+        </form>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-primary" type="button" ng-click="saveClient(client)">Save</button>
+        </p>
+    </div>
+</div>
+
+<!-- Ingresso Modal -->
+<div id="ingresso" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Ingresso</h2>
+
+        <p>Sei sicuro di voler confermare l'ingresso dell'utente ?</p>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancella</button>
+            <button class="uk-button uk-button-primary" type="button" ng-click="confermaIngresso(client)">Conferma</button>
+        </p>
     </div>
 </div>

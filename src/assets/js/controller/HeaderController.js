@@ -12,7 +12,7 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
         }
 
         $scope.openClientCard = function (id) {
-            $state.go('client', {id:id})
+            $state.go('client', {id:id}, {reload: true})
         }
 
         $rootScope.date = new Date();

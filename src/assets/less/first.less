@@ -1,38 +1,19 @@
-@color1: rgba(230, 57, 70, 1);
-@color2: rgba(241, 250, 238, 1);
-@color3: rgba(168, 218, 220, 1);
-@color4: rgba(69, 123, 157, 1);
-@color5: rgba(29, 53, 87, 1);
+@color-info: #D8EAFC;
+@color-success: #D2EAC7;
 
-body {
-  font-family: "Helvetica";
+a {
+  cursor: pointer;
 }
 
-.form-validation {
-  text-align: center;
+.info {
+  background-color: @color-info;
 }
 
-.form-validation input.ng-invalid.ng-touched {
-  border-color: #FA787E;
+.success {
+  background-color: @color-success;
 }
 
-//.form-validation input.ng-valid.ng-touched {
-//  border-color: #78FA89;
-//}
-
-.text-danger {
-  color: #FA787E;
-}
-
-.text-alert {
-  color: #faebcc;
-}
-
-.inputfile {
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
+.profile-img {
+  width: 30em;
+  height: 25em;
 }

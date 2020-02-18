@@ -1,31 +1,24 @@
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-            </button>
-            <img class="navbar-brand" ui-sref="home" src="logo.jpg"></img>
-        </div>
+<nav class="uk-navbar-container uk-margin" uk-navbar>
+    <div class="uk-navbar-left">
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li ng-class="{'active': isActive('registration')}" ng-click="click('registration')"><a ui-sref="registration"> Nuovo Cliente <span class="sr-only">(current)</span></a></li>
-                <li ng-class="{'active': isActive('spesa')}" ng-click="click('spesa')"><a ui-sref="spesa"> Spesa </a></li>
-                <li ng-class="{'active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Lista Clienti </a></li>
-                <li ng-class="{'active': isActive('attivita')}" ng-click="click('attivita')"><a ui-sref="attivita"> Gestione Attivita </a></li>
-                <li ng-class="{'active': isActive('contabilita')}" ng-click="click('contabilita')"><a ui-sref="contabilita"> Contabilita </a></li>
-            </ul>
-            <form class="navbar-form navbar-right">
-                <div class="form-group">
-                    <div class="navbar-link">{{date | date: 'dd MMM yyyy'}}</div>
-                </div>
-                <div class="form-group">
-                    <input ng-model="search" type="text" class="form-control" placeholder="Cerca">
-                </div>
-                <button type="submit" class="btn btn-default" ui-sref="subscription({clientId: search})">Cerca</button>
+        <a class="uk-navbar-item uk-logo" href="#">Logo</a>
+
+        <ul class="uk-navbar-nav">
+            <li ng-class="{'uk-active': isActive('registration')}" ng-click="click('registration')"><a ui-sref="registration"> Nuovo Cliente </a></li>
+            <li ng-class="{'uk-active': isActive('spesa')}" ng-click="click('spesa')"><a ui-sref="spesa"> Spesa </a></li>
+            <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Lista Clienti </a></li>
+            <li ng-class="{'uk-active': isActive('attivita')}" ng-click="click('attivita')"><a ui-sref="attivita"> Gestione Attivita </a></li>
+            <li ng-class="{'uk-active': isActive('contabilita')}" ng-click="click('contabilita')"><a ui-sref="contabilita"> Contabilita </a></li>
+        </ul>
+
+    </div>
+
+    <div class="uk-navbar-right">
+        <div class="uk-navbar-item">
+            <form action="javascript:void(0)">
+                <input ng-model="search" type="text" class="uk-input uk-form-width-small" placeholder="Cerca">
+                <button type="submit" class="uk-button uk-button-default" ui-sref="subscription({clientId: search})">Cerca</button>
             </form>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+        </div>
+    </div>
 </nav>

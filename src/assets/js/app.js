@@ -17,3 +17,5 @@ APP.config(['$httpProvider', function ($httpProvider) {
 APP.run([function () {
     console.log('Angular is running');
 }]);
+
+const PATH = "http://localhost:8094/rocky-marciano";

@@ -18,6 +18,8 @@ APP.run([function () {
     console.log('Angular is running');
 }]);
 
+const PATH = "http://localhost:8094/rocky-marciano";
+
 /**********************************************************/
 
 APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
@@ -60,13 +62,14 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
         var subscription = {
             name: 'subscription',
-            url: '/subscription',
-            params: {
-                id: undefined,
-                clientId: undefined
-            },
+            url: '/subscription/:clientId',
             templateUrl: 'subscription.html',
             controller: 'SubscriptionController',
+            resolve:{
+                clientId: ['$stateParams', function($stateParams){
+                    return $stateParams.clientId;
+                }]
+            },
         }
 
         var attivita = {
@@ -118,27 +121,6 @@ APP.controller('AttivitaController', ['$scope', '$stateParams', '$state', '$http
                 $scope.sports = success.data;
             });
         }
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('ClientController', ['$scope', '$stateParams', '$state', '$http', '$sportService',
-    function($scope, $stateParams, $state, $http, $sportService) {
-
-        $scope.clientId = $stateParams.id;
-
-        $http.get("http://localhost:8094/rocky-marciano" + '/clients/' + $scope.clientId).then(function (success) {
-            $scope.client = success.data;
-        }, function (error) {
-            console.log('error: ', error);
-        });
-
-        $scope.sports = $sportService.sports;
-
-        $scope.subscription = function (client) {
-            $state.go('subscription', {id: client.id});
-        };
 
     }]);
 
@@ -207,7 +189,7 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
         }
 
         $scope.openClientCard = function (id) {
-            $state.go('client', {id:id})
+            $state.go('client', {id:id}, {reload: true})
         }
 
         $rootScope.date = new Date();
@@ -278,13 +260,17 @@ APP.controller('SpesaController', ['$scope', '$stateParams','$state', '$http', '
 
 /**********************************************************/
 
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope', '$entranceService',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope, $entranceService) {
 
         $scope.clientId = $stateParams.clientId;
+        $scope.isHome = true;
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            $entranceService.getAllByClientId($scope.client.id).then(function (success) {
+                $scope.entrances = $entranceService.getOfThisWeek(success.data);
+            });
             $clientService.setStatus($scope.client, $rootScope.date);
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
@@ -326,6 +312,19 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             $scope.subscription.durata = 1;
             $scope.changeFromDate($scope.subscription.fromDate);
             $(id).modal('toggle');
+        }
+
+        $scope.confermaIngresso = function(client) {
+            // if ($scope.entrances <= $scope.client.maxEntrance) {
+            //
+            // }
+            $http.post("http://localhost:8094/rocky-marciano" + '/entrances', {date: new Date(), client: client}).then(function (success) {
+                $('#ingresso').modal('toggle');
+                $scope.isHome = true;
+            }, function (error) {
+                console.log(error);
+                $scope.error = error
+            });
         }
 
         $scope.changeFromDate = function (from) {
@@ -448,6 +447,51 @@ APP.service('$columnService', [ function () {
 
 
 
+
+/**********************************************************/
+
+APP.service('$entranceService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = PATH + '/entrances';
+
+    self.getAllByClientId = function(clientId) {
+        return $http.get(path + '?clientId=' + clientId);
+    };
+
+    self.getOfThisWeek = function(entrances) {
+        var retval = [];
+
+        var today = new Date();
+        var firtyDayOfWeek = new Date().setDate(today.getDate() - today.getDay());
+        entrances.forEach(function (entrance) {
+            if (new Date(entrance.date) >= firtyDayOfWeek) {
+                retval.push(entrance);
+            }
+        })
+
+        return retval;
+    }
+
+
+    self.save = function (entrance) {
+        return $http.post(path, entrance);
+    };
+
+    self.get = function (id) {
+        return $http.get(path + '/' + id);
+    };
+
+    self.delete = function (entrance) {
+        $http.delete(path + '/' + entrance.id).then(function (success) {
+            console.log('deleted: ', entrance.id)
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
 
 /**********************************************************/
 

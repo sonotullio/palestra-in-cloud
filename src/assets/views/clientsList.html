@@ -1,5 +1,5 @@
 <form name="myForm" novalidate>
-    <table class="table table-hover">
+    <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
         <thead>
         <tr>
             <th>id</th>
@@ -14,7 +14,7 @@
             <th ng-click="sortColumn('dateOfBirth')">Data</th>
             <th ng-click="sortColumn('birthPlace')">Luogo</th>
             <th>Note</th>
-            <th>Actions</th>
+            <th>Azioni</th>
         </tr>
         </thead>
         <tbody>
@@ -22,42 +22,42 @@
                 <td>{{client.id}}</td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.name}}</span>
-                    <input ng-model="client.name" ng-show="client.isEditing" class="form-control" required/>
+                    <input ng-model="client.name" ng-show="client.isEditing" class="uk-input" required/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.surname}}</span>
-                    <input ng-model="client.surname" ng-show="client.isEditing" class="form-control" required/>
+                    <input ng-model="client.surname" ng-show="client.isEditing" class="uk-input" required/>
                 </td>
                 <td>{{client.sport}}</td>
                 <td>{{client.expirationDate | date: 'dd/MM/yyyy'}}</td>
                 <td>{{client.certificateExpirationDate | date: 'dd/MM/yyyy'}}</td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.email}}</span>
-                    <input ng-model="client.email" ng-show="client.isEditing" class="form-control"/>
+                    <input ng-model="client.email" ng-show="client.isEditing" class="uk-input"/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.phone}}</span>
-                    <input ng-model="client.phone" ng-show="client.isEditing" class="form-control"/>
+                    <input ng-model="client.phone" ng-show="client.isEditing" class="uk-input"/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.cf}}</span>
-                    <input ng-model="client.cf" ng-show="client.isEditing" class="form-control"/>
+                    <input ng-model="client.cf" ng-show="client.isEditing" class="uk-input"/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.dateOfBirth}}</span>
-                    <input ng-model="client.dateOfBirth" ng-show="client.isEditing" class="form-control" required/>
+                    <input ng-model="client.dateOfBirth" ng-show="client.isEditing" class="uk-input" required/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.birthPlace}}</span>
-                    <input ng-model="client.birthPlace" ng-show="client.isEditing" class="form-control" required/>
+                    <input ng-model="client.birthPlace" ng-show="client.isEditing" class="uk-input" required/>
                 </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.note}}</span>
-                    <input ng-model="client.note" ng-show="client.isEditing" class="form-control"/>
+                    <input ng-model="client.note" ng-show="client.isEditing" class="uk-input"/>
                 </td>
                 <td>
-                    <button ng-show="!client.isEditing" ng-click="edit(client)" ng-disabled="isEditingDisabled" class="btn btn-sm btn-info">Edit</button>
-                    <button ng-show="client.isEditing" ng-click="updateClient(client)" class="btn btn-sm btn-success" type="submit" ng-disabled="!myForm.$valid" >Save</button>
+                    <button ng-show="!client.isEditing" ng-click="edit(client)" ng-disabled="isEditingDisabled" class="uk-button uk-button-default">Modifica</button>
+                    <button ng-show="client.isEditing" ng-click="updateClient(client)" class="uk-button uk-button-default" type="submit" ng-disabled="!myForm.$valid" >Salva</button>
                 </td>
             </tr>
         </tbody>

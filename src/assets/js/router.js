@@ -38,13 +38,14 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
         var subscription = {
             name: 'subscription',
-            url: '/subscription',
-            params: {
-                id: undefined,
-                clientId: undefined
-            },
+            url: '/subscription/:clientId',
             templateUrl: 'subscription.html',
             controller: 'SubscriptionController',
+            resolve:{
+                clientId: ['$stateParams', function($stateParams){
+                    return $stateParams.clientId;
+                }]
+            },
         }
 
         var attivita = {
