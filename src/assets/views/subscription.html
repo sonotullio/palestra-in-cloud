@@ -5,42 +5,48 @@
         <img id="img" class="profile-img" alt="" uk-img>
 
         <h3 class="uk-card-title"> {{client.name}} {{client.surname}}</h3>
-
-        <p>TIpologia di Abbonamento: {{client.sport}}</p>
-
-        <!-- Tab -->
-        <ul uk-tab>
-            <li ng-class="{'tab-active': isHome}"><a ng-click="isHome = true">Home</a></li>
-            <li ng-class="{'tab-active': !isHome}"><a ng-click="isHome = false">Ingressi</a></li>
-        </ul>
+        <div class="js-upload" uk-form-custom>
+            <input id="file" class="inputfile" type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
+            <button class="uk-button uk-button-primary" type="button" tabindex="-1">Carica Foto</button>
+        </div>
 
         <!-- Sezione Dati Profilo -->
-        <div ng-show="isHome">
+        <div>
 
-            <!-- Abbonamento -->
-            <div ng-class="{'uk-alert-success': !isExpired(client.expirationDate), 'uk-alert-danger': isExpired(client.expirationDate)}" uk-alert>
-                <p>Data di scadenza abbonamento: {{client.expirationDate}}</p>
-            </div>
+            <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
+                <thead>
+                <tr>
+                    <th>Abbonamento</th>
+                    <th>Scadenza</th>
+                    <th>Limite Ingressi</th>
+                    <th>Ingressi Effettuati</th>
+                    <th>Certificato</th>
+                    <th>Tesseramento</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{lastSubscription.sport.name}}</td>
+                    <td ng-class="{'uk-alert-success': !isExpired(client.expirationDate), 'uk-alert-danger': isExpired(client.expirationDate)}">{{lastSubscription.toDate}}</td>
+                    <td>{{lastSubscription.sport.maxEntrance}}</td>
+                    <td>{{entrances.length}}</td>
+                    <td ng-class="{'uk-alert-success': !isExpired(client.certificateExpirationDate), 'uk-alert-danger': isExpired(client.certificateExpirationDate)}">{{client.certificateExpirationDate}}</td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
 
-            <!-- Certificato -->
-            <div ng-class="{'uk-alert-success': !isExpired(client.certificateExpirationDate), 'uk-alert-danger': isExpired(client.certificateExpirationDate)}" ng-click="rinnova('#certificate')" uk-alert>
-                <p>Data di scadenza certificato medico: {{client.certificateExpirationDate}}</p>
-            </div>
+            <!-- Max Entrance Alert -->
+            <p ng-show="maxEntrance" class="uk-margin uk-alert-danger">
+                {{maxEntranceMsg}}
+            </p>
 
             <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #subscription">Abbonamento</button>
             <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #certificate">Certificato</button>
-            <div class="js-upload" uk-form-custom>
-                <input id="file" class="inputfile" type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
-                <button class="uk-button uk-button-primary" type="button" tabindex="-1">Carica Foto</button>
-            </div>
-
-        </div>
-
-        <!-- Entrances -->
-        <div ng-show="!isHome">
+            <button ng-disabled="lastSubscription.sport.maxEntrance <= entrances.length" class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #ingresso" >Ingresso</button>
 
             <!-- Tabella Ingressi -->
-            <table class="uk-table uk-table-hover uk-table-divider">
+            <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
                 <thead>
                 <tr>
                     <th class="uk-text-center">Data</th>
@@ -50,15 +56,11 @@
                 <tbody>
                 <tr ng-repeat="row in entrances">
                     <td>{{row.date}}</td>
-                    <td><button class="uk-button uk-button-danger" type="button">Rimuovi</button></td>
+                    <td><button class="uk-button uk-button-small uk-button-danger" type="button">Rimuovi</button></td>
                 </tr>
                 </tbody>
             </table>
 
-            <!-- Ingresso -->
-            <p class="uk-margin">
-                <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #ingresso">Ingresso</button>
-            </p>
         </div>
     </div>
 </div>
@@ -68,36 +70,44 @@
 <div id="subscription" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title">Rinnovo Abbonamento</h2>
-        <p>...</p>
 
-        <form>
+        <form class="uk-form-stacked">
+
+            <!-- From Date -->
+            <div class="uk-margin">
+                <label class="uk-form-label" for="from">Data di inizio: </label>
+                <input id="from" ng-model="subscription.fromDate" class="uk-input uk-form-width-large" type="date"
+                       ng-change="changeFromDate(subscription.fromDate)" required/>
+            </div>
+
+            <!-- To Date -->
+            <div class="uk-margin">
+                <label class="uk-form-label" for="to">Data di fine: </label>
+                <input id="to" ng-model="subscription.toDate" class="uk-input uk-form-width-large" type="date"
+                       disabled required/>
+            </div>
+
             <!-- Durata -->
-            <div class="form-group">
-                <span class="my-label"> Durata: </span>
-                <select class="custom-select  my-input" ng-model="subscription.durata"
-                        ng-change="changeFromDate(subscription.fromDate)">
-                    <option ng-repeat="month in months" ng-value="month.value"> {{month.description}}</option>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="durata"> Durata: </label>
+                <select id="durata" class="uk-select" ng-model="subscription.month" ng-change="changeFromDate(subscription.fromDate); computeTotalPrice(subscription)">
+                    <option ng-repeat="month in months" ng-value="month"> {{month.description}}</option>
                 </select>
-            </div>
-
-            <!-- From -->
-            <div class="form-group text-center">
-                <span class="my-label"> Data di partenza: </span>
-                <input ng-model="subscription.fromDate" ng-change="changeFromDate(subscription.fromDate)"
-                       class="form-control" type="date" required/>
-            </div>
-
-            <div class="form-group">
-                <span class="my-label"> Data di fine: </span>
-                <span class="form-control"> {{subscription.toDate | date: 'dd/MM/yyyy'}} </span>
             </div>
 
             <!-- Sport -->
-            <div class="form-group">
-                <span class="my-label"> Attivita </span>
-                <select class="custom-select  my-input" ng-model="subscription.sport">
+            <div class="uk-margin">
+                <label class="uk-form-label" for="sport"> Abbonamento: </label>
+                <select id="sport" class="uk-select" ng-model="subscription.sport" ng-change="computeTotalPrice(subscription)">
                     <option ng-repeat="sport in sports" ng-value="sport"> {{sport.name}}</option>
                 </select>
+            </div>
+
+            <!-- To Date -->
+            <div class="uk-margin">
+                <label class="uk-form-label" for="total">Totale: </label>
+                <input id="total" ng-model="subscription.price" class="uk-input uk-form-width-large"
+                       disabled required/>
             </div>
 
         </form>

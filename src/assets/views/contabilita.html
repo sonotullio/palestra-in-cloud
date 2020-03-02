@@ -1,17 +1,17 @@
 <div>
-    <table class="uk-table uk-table-hover uk-table-divider">
+    <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
         <thead>
         <tr>
-            <th ng-click="sortColumn('price')">Importo</th>
             <th ng-click="sortColumn('date')">Data</th>
             <th ng-click="sortColumn('description')">Descrizione</th>
+            <th ng-click="sortColumn('price')">Importo</th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="cashflow in cashflows | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
-            <td>{{cashflow.price | number: 2}}</td>
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
             <td>{{cashflow.description}}</td>
+            <td>{{cashflow.price | number: 2}}</td>
         </tr>
         </tbody>
     </table>
