@@ -1,15 +1,31 @@
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope', '$entranceService',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope, $entranceService) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', 'ProductService', '$http', '$rootScope', '$entranceService',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, ProductService, $http, $rootScope, $entranceService) {
 
         $scope.clientId = $stateParams.clientId;
-        $scope.isHome = true;
+        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
+
+        $scope.months = [
+            {value: 1, description: '1 mese', multiplier: 1},
+            {value: 6, description: '6 mesi', multiplier: 5/6},
+            {value: 12, description: '12 mesi', multiplier: 9/12},
+        ];
+
+        // carica a be
+        $scope.buys = [
+            {date: new Date(), description: 'Quota associazione', price: 50},
+            {date: new Date(), description: 'Abbonamento trimestrale', price: 150},
+            {date: new Date(), description: 'Tesseramento FPI 2020', price: 30},
+        ]
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+
             $entranceService.getAllByClientId($scope.client.id).then(function (success) {
                 $scope.entrances = $entranceService.getOfThisWeek(success.data);
+
                 $subscriptionService.getByClientId($scope.clientId).then(function(success) {
-                    $scope.lastSubscription = success.data;
+                    $scope.subscriptions = success.data;
+                    $scope.lastSubscription = success.data[success.data.length -1];
                     if ($scope.lastSubscription.sport.maxEntrance <= $scope.entrances.length) {
                         $scope.maxEntrance = true;
                     }
@@ -19,24 +35,9 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
-        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
-
-        $scope.months = [
-            {value: 1, description: '1 mese', multiplier: 1},
-            {value: 6, description: '6 mesi', multiplier: 5/6},
-            {value: 12, description: '12 mesi', multiplier: 9/12},
-        ];
-
-        $sportService.getAll().then(function (success) {
+        ProductService.getAll().then(function (success) {
             $scope.sports = success.data;
         });
-
-        $scope.save = function (subscription) {
-            $scope.computeTotalPrice(subscription);
-            subscription.client = $scope.client;
-            $subscriptionService.save(subscription);
-            $('#subscription').modal('toggle');
-        };
 
         $scope.computeTotalPrice = function(subscription) {
             if (subscription.sport && subscription.month) {
@@ -47,36 +48,37 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             }
         }
 
-        $scope.saveClient = function(client) {
+        $scope.addCertificate = function(client) {
             $clientService.save(client).then(function (success) {
-                $('#certificate').modal('toggle');
-                $clientService.get(client.id).then(function (success) {
-                    $scope.client = success.data;
-                })
-            })
+                $state.reload();
+            });
 
-        }
+        };
 
-        $scope.rinnova = function (id) {
-            $scope.subscription = {};
-            $scope.subscription.fromDate = new Date($scope.lastSubscription.toDate);
-            $scope.subscription.durata = 1;
-            $scope.changeFromDate($scope.subscription.fromDate);
-            $(id).modal('toggle');
-        }
+        $scope.addSubscription = function (subscription) {
+            $scope.computeTotalPrice(subscription);
+            subscription.client = $scope.client;
+            $subscriptionService.save(subscription);
+            $state.reload();
+        };
 
-        $scope.confermaIngresso = function(client) {
+        $scope.addEntrance = function(client) {
             $http.post("http://localhost:8094/rocky-marciano" + '/entrances', {date: new Date(), client: client}).then(function (success) {
-                $('#ingresso').modal('toggle');
+                $state.reload();
             }, function (error) {
                 console.log(error);
                 $scope.error = error
             });
-        }
+        };
 
         $scope.changeFromDate = function (from) {
-            $scope.subscription.toDate = new Date(from);
-            $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.month.value );
+            $scope.subscription.fromDate.setDate(from.getDate() + 1);
+            $scope.subscription.toDate.setMonth( $scope.subscription.fromDate.getMonth() + $scope.subscription.month.value );
+            $scope.subscription.duration = $scope.subscription.month.value;
+        }
+
+        $scope.changeDate = function (date) {
+            $scope.client.certificateExpirationDate.setDate(date.getDate() + 1);
         }
 
         $scope.isAlert = function(date) {
@@ -102,5 +104,9 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             })
 
         };
+
+        $scope.edit = function () {
+            console.log('update');
+        }
 
     }]);

@@ -1,13 +1,12 @@
-<nav class="uk-navbar-container uk-margin" uk-navbar>
+<nav class="uk-navbar" uk-navbar>
     <div class="uk-navbar-left">
 
-        <a class="uk-navbar-item uk-logo" href="#">Logo</a>
+        <a class="uk-navbar-item uk-logo" ui-sref="home">Palestra in Cloud</a>
 
         <ul class="uk-navbar-nav">
-            <li ng-class="{'uk-active': isActive('registration')}" ng-click="click('registration')"><a ui-sref="registration"> Nuovo Cliente </a></li>
-            <li ng-class="{'uk-active': isActive('spesa')}" ng-click="click('spesa')"><a ui-sref="spesa"> Spesa </a></li>
-            <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Lista Clienti </a></li>
-            <li ng-class="{'uk-active': isActive('attivita')}" ng-click="click('attivita')"><a ui-sref="attivita"> Gestione Attivita </a></li>
+            <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Clienti </a></li>
+            <li ng-class="{'uk-active': isActive('products')}" ng-click="click('products')"><a ui-sref="products"> Prodotti </a></li>
+            <li ng-class="{'uk-active': isActive('spesa')}" ng-click="click('spesa')"><a ui-sref="spesa"> Spese </a></li>
             <li ng-class="{'uk-active': isActive('contabilita')}" ng-click="click('contabilita')"><a ui-sref="contabilita"> Contabilita </a></li>
         </ul>
 
@@ -16,9 +15,10 @@
     <div class="uk-navbar-right">
         <div class="uk-navbar-item">
             <form action="javascript:void(0)">
-                <input ng-model="search" type="text" class="uk-input uk-form-width-small" placeholder="Cerca">
-                <button type="submit" class="uk-button uk-button-default" ui-sref="subscription({clientId: search})">Cerca</button>
+                <input ng-model="search" type="text" class="uk-input uk-form-width-small" placeholder="Id Cliente">
+                <button type="submit" class="uk-button uk-button-secondary" ui-sref="subscription({clientId: search})">Apri Scheda</button>
             </form>
         </div>
     </div>
 </nav>
+<hr>

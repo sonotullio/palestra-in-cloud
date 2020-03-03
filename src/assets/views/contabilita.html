@@ -1,8 +1,40 @@
-<div>
+<div class="uk-section uk-padding">
+
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <h3 class="uk-article-title"> Vendite </h3>
+        </div>
+        <div class="uk-navbar-center">
+
+        </div>
+        <div class="uk-navbar-right">
+            <div class="uk-navbar-item">
+                <label> Da: </label>
+                <input class="uk-input" type="date"/>
+            </div>
+            <div class="uk-navbar-item">
+                <label> A: </label>
+                <input class="uk-input" type="date"/>
+            </div>
+            <div class="uk-navbar-item">
+                <select class="uk-select">
+                    <option>Questo mese</option>
+                    <option>Mese scorso</option>
+                    <option>Da inizio anno</option>
+                    <option>Anno scorso</option>
+                    <option>Da sempre</option>
+                </select>
+            </div>
+            <input ng-model="search" type="text" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Cerca">
+            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right"><a href="" uk-icon="icon: download"></a></button>
+        </div>
+    </nav>
+
     <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
         <thead>
         <tr>
             <th ng-click="sortColumn('date')">Data</th>
+            <th ng-click="sortColumn('client')">Cliente</th>
             <th ng-click="sortColumn('description')">Descrizione</th>
             <th ng-click="sortColumn('price')">Importo</th>
         </tr>
@@ -10,6 +42,7 @@
         <tbody>
         <tr ng-repeat="cashflow in cashflows | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
+            <td>{{cashflow.client}}</td>
             <td>{{cashflow.description}}</td>
             <td>{{cashflow.price | number: 2}}</td>
         </tr>

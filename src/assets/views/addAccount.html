@@ -1,0 +1,69 @@
+<div ng-show="!details">
+    <!-- Section .. -->
+    <div class="uk-section uk-text-center">
+
+        <h3 class="uk-article-title">
+            La soluzione <strong>facile</strong> e <strong>veloce</strong> </br> per la gestione del tuo centro.
+        </h3>
+
+        <p>...</p>
+    </div>
+
+    <div class="uk-section uk-text-center">
+        <h3 class="uk-article-title">Che tipo di attività vuoi gestire ?</h3>
+
+        <div class="uk-child-width-expand@s" uk-grid>
+            <div ng-repeat="sport in sports">
+                <div class="uk-card uk-card-hover uk-card-body">
+                    <h3 class="uk-card-title">{{sport.title}}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="uk-section uk-text-center">
+        <h3 class="uk-article-title">Come si chiama il tuo centro ?</h3>
+
+        <div class="uk-margin">
+            <input id="palestra" class="uk-input uk-form-width-large" type="text"/>
+        </div>
+
+        <label class="uk-form-label">*Puoi modificarlo in un secondo momento.</label>
+
+        <div class="uk-section">
+            <button class="uk-button uk-button-primary" type="button" ng-click="details = true">Inizia Subito</button>
+        </div>
+    </div>
+</div>
+
+<!-- Details-->
+<div ng-show="details">
+    <div class="uk-section uk-text-center">
+        <h3 class="uk-article-title">Configuriamo il tuo account</h3>
+        <p class="uk-article">Poche informazioni e potrai iniziare.</p>
+
+        <form class="uk-form-stacked">
+            <div class="uk-margin">
+                <label class="uk-form-label" for="name">Nome e Cognome</label>
+                <input id="name" type="text" class="uk-input uk-form-width-large"/>
+            </div>
+
+            <div class="uk-margin">
+                <label class="uk-form-label" for="phone">il tuo numero di cellulare</label>
+                <input id="phone" type="text" class="uk-input uk-form-width-large" />
+            </div>
+
+            <div class="uk-margin">
+                <label class="uk-form-label" for="email">e-mail (ti servirà per il login)</label>
+                <input id="email" type="text" class="uk-input uk-form-width-large"/>
+            </div>
+
+            <div class="uk-margin">
+                <label class="uk-form-label" for="password">password (tienila in un luogo sicuro)</label>
+                <input id="password" type="text" class="uk-input uk-form-width-large"/>
+            </div>
+        </form>
+
+        <button class="uk-button uk-button-primary uk-margin-small-right" type="button" ng-click="">Configura</button>
+    </div>
+</div>

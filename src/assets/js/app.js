@@ -1,5 +1,5 @@
 var APP = angular.module('rocky-marciano', [
-    'ui.router'
+    'ui.router',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {

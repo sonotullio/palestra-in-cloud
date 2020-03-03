@@ -1,0 +1,43 @@
+<div class="uk-section uk-padding">
+    <div class="uk-align-right">
+        <button class="uk-button uk-button-primary" ng-click="addProduct()">
+            Nuovo Prodotto
+        </button>
+    </div>
+    <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Descrizione</th>
+            <th>Prezzo Mensile</th>
+            <th>Tipologia</th>
+            <th>Limite Ingressi</th>
+            <th>Durata</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="product in sports" ng-click="edit(product)">
+            <td>
+                <span> {{product.name}} </span>
+            </td>
+            <td>
+                <span> {{product.description}} </span>
+            </td>
+            <td>
+                <span> {{product.price}} </span>
+            </td>
+            <td>
+                <span> {{product.type}} </span>
+            </td>
+            <td>
+                <span> {{product.maxEntrance}} </span>
+            </td>
+            <td>
+                <span> {{product.duration}} </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div ng-include="'modals/addEditProduct.html'" ng-controller="AddEditProductController"></div>

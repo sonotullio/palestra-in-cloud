@@ -1,4 +1,4 @@
-APP.service('$sportService', ['$http', function ($http) {
+APP.service('ProductService', ['$http', function ($http) {
 
     var self = this;
 

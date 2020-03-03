@@ -1,13 +1,6 @@
 APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-        var login = {
-            name: 'login',
-            url: '/login',
-            controller: 'LoginController',
-            templateUrl: 'login.html'
-        }
-
         var home = {
             name: 'home',
             url: '/home',
@@ -15,11 +8,25 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             templateUrl: 'home.html'
         }
 
+        var login = {
+            name: 'login',
+            url: '/login',
+            controller: 'LoginController',
+            templateUrl: 'login.html'
+        }
+
+        var addAccount = {
+            name: 'addAccount',
+            url: '/addAccount',
+            controller: 'AddAccountController',
+            templateUrl: 'addAccount.html'
+        }
+
         var registration = {
             name: 'registration',
             url: '/registration',
             controller: 'RegistrationController',
-            templateUrl: 'registration.html'
+            templateUrl: 'registration.html',
         }
 
         var spesa = {
@@ -48,11 +55,11 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             },
         }
 
-        var attivita = {
-            name: 'attivita',
-            url: '/attivita',
-            templateUrl: 'attivita.html',
-            controller: 'AttivitaController',
+        var products = {
+            name: 'products',
+            url: '/products',
+            templateUrl: 'products.html',
+            controller: 'ProductsController',
         }
 
         var contabilita = {
@@ -64,11 +71,12 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
         $stateProvider.state(home);
         $stateProvider.state(login);
+        $stateProvider.state(addAccount);
         $stateProvider.state(registration);
         $stateProvider.state(spesa);
         $stateProvider.state(clientsList);
         $stateProvider.state(subscription);
-        $stateProvider.state(attivita);
+        $stateProvider.state(products);
         $stateProvider.state(contabilita);
 
     }]);

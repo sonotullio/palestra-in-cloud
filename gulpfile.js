@@ -41,7 +41,6 @@ var vendor = {
     js:[
         path.vendor_npm   + '/jquery/dist/jquery.js',
         path.vendor_npm   + '/angular/angular.js',
-        path.vendor_npm   + '/bootstrap/dist/js/bootstrap.js',
         path.vendor_npm   + '/angular-ui-router/release/angular-ui-router.js',
         path.vendor_npm   + '/uikit/dist/js/uikit.js',
         path.vendor_npm   + '/uikit/dist/js/uikit-icons.min.js',

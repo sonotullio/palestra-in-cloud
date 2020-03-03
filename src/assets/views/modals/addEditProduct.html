@@ -1,0 +1,68 @@
+<div id="registration-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Nuovo Prodotto</h2>
+
+        <form name="form" novalidate class="uk-form-stacked">
+
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div>
+                    <!-- Name -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="name">Nome</label>
+                        <input id="name" ng-model="product.name" name="name" class="uk-input uk-form-width-large" type="text"
+                               required/>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="name">Descrizione</label>
+                        <input id="description" ng-model="product.description" name="description" class="uk-input uk-form-width-large" type="text"
+                               required/>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="price">Prezzo</label>
+                        <input id="price" ng-model="product.price" name="price" class="uk-input uk-form-width-large" type="number"
+                               required/>
+                    </div>
+
+                    <!-- Type -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="type"> Tipologia </label>
+                        <select id="type" ng-model="product.type" class="uk-input uk-form-width-large" required>
+                            <option ng-repeat="type in types" ng-value="type.value">{{type.label}}</option>
+                        </select>
+                    </div>
+
+                    <div ng-if="product.type == 'Abbonamento'">
+
+                        <!-- Max Entrance -->
+                        <div class="uk-margin">
+                            <label class="uk-form-label" for="maxEntrance">Limite di ingressi</label>
+                            <input id="maxEntrance" ng-model="product.maxEntrance" name="maxEntrance" class="uk-input uk-form-width-large" type="number"
+                                   required/>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="uk-margin">
+                            <label class="uk-form-label" for="type"> Durata </label>
+                            <select id="duration" ng-model="product.duration" class="uk-input uk-form-width-large" required>
+                                <option ng-repeat="duration in durations" ng-value="duration.value">{{duration.label}}</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div ng-show="product.type == 'Merchandise'"></div>
+                </div>
+
+            </div>
+        </form>
+
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancella</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button" ng-click="save(product)" ng-disabled="!form.$valid">Conferma</button>
+        </p>
+    </div>
+</div>

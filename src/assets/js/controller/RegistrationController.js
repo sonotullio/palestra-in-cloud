@@ -1,5 +1,5 @@
-APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', '$sportService',
-    function($scope, $stateParams, $state, $http, $filter, $sportService) {
+APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService) {
 
     $scope.save = function (client) {
         client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
@@ -15,6 +15,6 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
         return field != undefined && field != '';
     }
 
-    $scope.sports = $sportService.sports;
+    $scope.sports = ProductService.sports;
 
     }]);

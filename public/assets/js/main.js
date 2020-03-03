@@ -1,5 +1,5 @@
 var APP = angular.module('rocky-marciano', [
-    'ui.router'
+    'ui.router',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {
@@ -25,13 +25,6 @@ const PATH = "http://localhost:8094/rocky-marciano";
 APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-        var login = {
-            name: 'login',
-            url: '/login',
-            controller: 'LoginController',
-            templateUrl: 'login.html'
-        }
-
         var home = {
             name: 'home',
             url: '/home',
@@ -39,11 +32,25 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             templateUrl: 'home.html'
         }
 
+        var login = {
+            name: 'login',
+            url: '/login',
+            controller: 'LoginController',
+            templateUrl: 'login.html'
+        }
+
+        var addAccount = {
+            name: 'addAccount',
+            url: '/addAccount',
+            controller: 'AddAccountController',
+            templateUrl: 'addAccount.html'
+        }
+
         var registration = {
             name: 'registration',
             url: '/registration',
             controller: 'RegistrationController',
-            templateUrl: 'registration.html'
+            templateUrl: 'registration.html',
         }
 
         var spesa = {
@@ -72,11 +79,11 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
             },
         }
 
-        var attivita = {
-            name: 'attivita',
-            url: '/attivita',
-            templateUrl: 'attivita.html',
-            controller: 'AttivitaController',
+        var products = {
+            name: 'products',
+            url: '/products',
+            templateUrl: 'products.html',
+            controller: 'ProductsController',
         }
 
         var contabilita = {
@@ -88,39 +95,50 @@ APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
         $stateProvider.state(home);
         $stateProvider.state(login);
+        $stateProvider.state(addAccount);
         $stateProvider.state(registration);
         $stateProvider.state(spesa);
         $stateProvider.state(clientsList);
         $stateProvider.state(subscription);
-        $stateProvider.state(attivita);
+        $stateProvider.state(products);
         $stateProvider.state(contabilita);
 
     }]);
 
 /**********************************************************/
 
-APP.controller('AttivitaController', ['$scope', '$stateParams', '$state', '$http', '$sportService',
-    function($scope, $stateParams, $state, $http, $sportService) {
+APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
+    function($scope, $stateParams, $state, ) {
 
-        $sportService.getAll().then(function (success) {
-            $scope.sports = success.data;
-        });
+    $scope.sports = [
+        {title: 'Boxe'},
+        {title: 'Kick Boxe'},
+        {title: 'Functional'},
+    ]
+    }]);
 
-        $scope.add = function () {
-            $scope.sports.push({name: "", price: 0, isEditing: true});
-        }
+/**********************************************************/
 
-        $scope.save = function (sport) {
-            $sportService.save(sport);
-            $state.reload();
-        }
+APP.controller('AddEditProductController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService) {
 
-        $scope.delete = function (sport) {
-            $sportService.delete(sport);
-            $sportService.getAll().then(function (success) {
-                $scope.sports = success.data;
-            });
-        }
+    $scope.types = [
+        {value: 'Abbonamento', label: 'Abbonamento'},
+        {value: 'Merchandise', label: 'Merchandise'}
+    ];
+
+    $scope.durations = [
+        {value: 1, label: 'Mensile'},
+        {value: 6, label: 'Semestrale'},
+        {value: 12, label: 'Annuale'},
+    ];
+
+    $scope.sports = ProductService.sports;
+
+    $scope.save = function (product) {
+        console.log(product);
+        $state.go('products');
+    }
 
     }]);
 
@@ -153,6 +171,10 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
             client.isEditing = !client.isEditing;
             $scope.isEditingDisabled = !$scope.isEditingDisabled;
         };
+
+        $scope.addClient = function () {
+            UIkit.modal('#registration-modal').show();
+        }
 
     }]);
 
@@ -202,7 +224,9 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
 APP.controller('HomepageController', ['$scope', '$stateParams', '$state',
     function($scope, $stateParams, $state, ) {
 
-        console.log('Homepage Controller');
+        $scope.addAccount = function () {
+            $state.go('addAccount');
+        }
 
 
     }]);
@@ -219,8 +243,35 @@ APP.controller('LoginController', ['$scope', '$stateParams', '$state',
 
 /**********************************************************/
 
-APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', '$sportService',
-    function($scope, $stateParams, $state, $http, $filter, $sportService) {
+APP.controller('ProductsController', ['$scope', '$stateParams', '$state', '$http', 'ProductService',
+    function($scope, $stateParams, $state, $http, ProductService) {
+
+        ProductService.getAll().then(function (success) {
+            $scope.sports = success.data;
+        });
+
+        $scope.addProduct = function () {
+            UIkit.modal('#registration-modal').show();
+        }
+
+        $scope.save = function (sport) {
+            ProductService.save(sport);
+            $state.reload();
+        }
+
+        $scope.delete = function (sport) {
+            ProductService.delete(sport);
+            ProductService.getAll().then(function (success) {
+                $scope.sports = success.data;
+            });
+        }
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService) {
 
     $scope.save = function (client) {
         client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
@@ -236,7 +287,7 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
         return field != undefined && field != '';
     }
 
-    $scope.sports = $sportService.sports;
+    $scope.sports = ProductService.sports;
 
     }]);
 
@@ -260,18 +311,34 @@ APP.controller('SpesaController', ['$scope', '$stateParams','$state', '$http', '
 
 /**********************************************************/
 
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', '$sportService', '$http', '$rootScope', '$entranceService',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, $sportService, $http, $rootScope, $entranceService) {
+APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', 'ProductService', '$http', '$rootScope', '$entranceService',
+    function($scope, $stateParams, $state, $clientService, $subscriptionService, ProductService, $http, $rootScope, $entranceService) {
 
         $scope.clientId = $stateParams.clientId;
-        $scope.isHome = true;
+        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
+
+        $scope.months = [
+            {value: 1, description: '1 mese', multiplier: 1},
+            {value: 6, description: '6 mesi', multiplier: 5/6},
+            {value: 12, description: '12 mesi', multiplier: 9/12},
+        ];
+
+        // carica a be
+        $scope.buys = [
+            {date: new Date(), description: 'Quota associazione', price: 50},
+            {date: new Date(), description: 'Abbonamento trimestrale', price: 150},
+            {date: new Date(), description: 'Tesseramento FPI 2020', price: 30},
+        ]
 
         $clientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+
             $entranceService.getAllByClientId($scope.client.id).then(function (success) {
                 $scope.entrances = $entranceService.getOfThisWeek(success.data);
+
                 $subscriptionService.getByClientId($scope.clientId).then(function(success) {
-                    $scope.lastSubscription = success.data;
+                    $scope.subscriptions = success.data;
+                    $scope.lastSubscription = success.data[success.data.length -1];
                     if ($scope.lastSubscription.sport.maxEntrance <= $scope.entrances.length) {
                         $scope.maxEntrance = true;
                     }
@@ -281,24 +348,9 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
         });
 
-        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
-
-        $scope.months = [
-            {value: 1, description: '1 mese', multiplier: 1},
-            {value: 6, description: '6 mesi', multiplier: 5/6},
-            {value: 12, description: '12 mesi', multiplier: 9/12},
-        ];
-
-        $sportService.getAll().then(function (success) {
+        ProductService.getAll().then(function (success) {
             $scope.sports = success.data;
         });
-
-        $scope.save = function (subscription) {
-            $scope.computeTotalPrice(subscription);
-            subscription.client = $scope.client;
-            $subscriptionService.save(subscription);
-            $('#subscription').modal('toggle');
-        };
 
         $scope.computeTotalPrice = function(subscription) {
             if (subscription.sport && subscription.month) {
@@ -309,36 +361,37 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
             }
         }
 
-        $scope.saveClient = function(client) {
+        $scope.addCertificate = function(client) {
             $clientService.save(client).then(function (success) {
-                $('#certificate').modal('toggle');
-                $clientService.get(client.id).then(function (success) {
-                    $scope.client = success.data;
-                })
-            })
+                $state.reload();
+            });
 
-        }
+        };
 
-        $scope.rinnova = function (id) {
-            $scope.subscription = {};
-            $scope.subscription.fromDate = new Date($scope.lastSubscription.toDate);
-            $scope.subscription.durata = 1;
-            $scope.changeFromDate($scope.subscription.fromDate);
-            $(id).modal('toggle');
-        }
+        $scope.addSubscription = function (subscription) {
+            $scope.computeTotalPrice(subscription);
+            subscription.client = $scope.client;
+            $subscriptionService.save(subscription);
+            $state.reload();
+        };
 
-        $scope.confermaIngresso = function(client) {
+        $scope.addEntrance = function(client) {
             $http.post("http://localhost:8094/rocky-marciano" + '/entrances', {date: new Date(), client: client}).then(function (success) {
-                $('#ingresso').modal('toggle');
+                $state.reload();
             }, function (error) {
                 console.log(error);
                 $scope.error = error
             });
-        }
+        };
 
         $scope.changeFromDate = function (from) {
-            $scope.subscription.toDate = new Date(from);
-            $scope.subscription.toDate.setMonth( from.getMonth() + $scope.subscription.month.value );
+            $scope.subscription.fromDate.setDate(from.getDate() + 1);
+            $scope.subscription.toDate.setMonth( $scope.subscription.fromDate.getMonth() + $scope.subscription.month.value );
+            $scope.subscription.duration = $scope.subscription.month.value;
+        }
+
+        $scope.changeDate = function (date) {
+            $scope.client.certificateExpirationDate.setDate(date.getDate() + 1);
         }
 
         $scope.isAlert = function(date) {
@@ -365,7 +418,45 @@ APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$
 
         };
 
+        $scope.edit = function () {
+            console.log('update');
+        }
+
     }]);
+
+/**********************************************************/
+
+APP.service('ProductService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = "http://localhost:8094/rocky-marciano" + '/sports';
+
+    self.sports  = [];
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.sports = self.getAll();
+
+    self.save = function (sport) {
+        $http.post(path, sport).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+    self.delete = function (sport) {
+        $http.delete(path + '/' + sport.name).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
 
 /**********************************************************/
 
@@ -406,6 +497,8 @@ APP.service('$clientService', ['$http', function ($http) {
     }
 
     self.setStatus = function (client, date) {
+        client.age = self.calculateAge(new Date(client.dateOfBirth));
+
         if (client.expirationDate == undefined || client.certificateExpirationDate == undefined) {
             client.isExpired = true;
         } else {
@@ -437,6 +530,12 @@ APP.service('$clientService', ['$http', function ($http) {
         } else {
             return false;
         }
+    }
+
+    self.calculateAge = function (birthday) { // birthday is a date
+        var ageDifMs = Date.now() - birthday.getTime();
+        var ageDate = new Date(ageDifMs); // miliseconds from epoch
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
     }
 
 }]);
@@ -495,40 +594,6 @@ APP.service('$entranceService', ['$http', function ($http) {
     self.delete = function (entrance) {
         $http.delete(path + '/' + entrance.id).then(function (success) {
             console.log('deleted: ', entrance.id)
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-}]);
-
-/**********************************************************/
-
-APP.service('$sportService', ['$http', function ($http) {
-
-    var self = this;
-
-    const path = "http://localhost:8094/rocky-marciano" + '/sports';
-
-    self.sports  = [];
-
-    self.getAll = function() {
-        return $http.get(path);
-    };
-
-    self.sports = self.getAll();
-
-    self.save = function (sport) {
-        $http.post(path, sport).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-    self.delete = function (sport) {
-        $http.delete(path + '/' + sport.name).then(function (success) {
-            self.getAll();
         }, function (error) {
             console.log(error);
         });

@@ -26,4 +26,8 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
             $scope.isEditingDisabled = !$scope.isEditingDisabled;
         };
 
+        $scope.addClient = function () {
+            UIkit.modal('#registration-modal').show();
+        }
+
     }]);
