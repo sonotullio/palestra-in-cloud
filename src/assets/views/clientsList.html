@@ -1,7 +1,7 @@
 <div class="uk-section uk-padding">
-    <nav class="uk-navbar-container" uk-navbar>
+    <nav class="uk-navbar-container uk-padding-small" uk-navbar>
         <div class="uk-navbar-left">
-            <h3 class="uk-article-title">{{clients.length}} Clienti</h3>
+            <span class="uk-badge uk-margin-small-right">{{clients.length}}</span> <strong> Clienti </strong>
         </div>
         <div class="uk-navbar-center">
 
@@ -27,8 +27,10 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': client.isAlert, 'danger' : client.isExpired}" ui-sref="subscription({clientId: client.id})">
-                <td>{{client.id}}</td>
+            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': client.isAlert, 'danger' : client.isExpired}">
+                <td ui-sref="client({clientId: client.id})">
+                    <a class="uk-link-heading"> {{client.id}} </a>
+                </td>
                 <td>
                     <span ng-show="!client.isEditing">{{client.name}}</span>
                     <input ng-model="client.name" ng-show="client.isEditing" class="uk-input" required/>

@@ -22,88 +22,94 @@ const PATH = "http://localhost:8094/rocky-marciano";
 
 /**********************************************************/
 
-APP.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
-    function ($stateProvider, $urlRouterProvider, $locationProvider) {
+APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
-        var home = {
-            name: 'home',
-            url: '/home',
-            controller: 'HomepageController',
-            templateUrl: 'home.html'
-        }
+    var home = {
+        name: 'home',
+        url: '/home',
+        controller: 'HomepageController',
+        templateUrl: 'home.html'
+    }
 
-        var login = {
-            name: 'login',
-            url: '/login',
-            controller: 'LoginController',
-            templateUrl: 'login.html'
-        }
+    var login = {
+        name: 'login',
+        url: '/login',
+        controller: 'LoginController',
+        templateUrl: 'login.html'
+    }
 
-        var addAccount = {
-            name: 'addAccount',
-            url: '/addAccount',
-            controller: 'AddAccountController',
-            templateUrl: 'addAccount.html'
-        }
+    var addAccount = {
+        name: 'addAccount',
+        url: '/addAccount',
+        controller: 'AddAccountController',
+        templateUrl: 'addAccount.html'
+    }
 
-        var registration = {
-            name: 'registration',
-            url: '/registration',
-            controller: 'RegistrationController',
-            templateUrl: 'registration.html',
-        }
+    var registration = {
+        name: 'registration',
+        url: '/registration',
+        controller: 'RegistrationController',
+        templateUrl: 'registration.html',
+    }
 
-        var spesa = {
-            name: 'spesa',
-            url: '/spesa',
-            controller: 'SpesaController',
-            templateUrl: 'spesa.html'
-        }
+    var clientsList = {
+        name: 'clientsList',
+        url: '/clients',
+        controller: 'ClientsListController',
+        templateUrl: 'clientsList.html'
+    }
 
-        var clientsList = {
-            name: 'clientsList',
-            url: '/clients',
-            controller: 'ClientsListController',
-            templateUrl: 'clientsList.html'
-        }
+    var client = {
+        name: 'client',
+        url: '/clients/:clientId',
+        templateUrl: 'client.html',
+        controller: 'ClientController',
+        resolve: {
+            clientId: ['$stateParams', function ($stateParams) {
+                return $stateParams.clientId;
+            }]
+        },
+    }
 
-        var subscription = {
-            name: 'subscription',
-            url: '/subscription/:clientId',
-            templateUrl: 'subscription.html',
-            controller: 'SubscriptionController',
-            resolve:{
-                clientId: ['$stateParams', function($stateParams){
-                    return $stateParams.clientId;
-                }]
-            },
-        }
+    var product = {
+        name: 'products.edit',
+        url: '/:productId',
+        templateUrl: 'modals/productaddedit.html',
+        controller: 'ProductAddEditController',
+        resolve: {
+            clientId: ['$stateParams', function ($stateParams) {
+                return $stateParams.productId;
+            }]
+        },
+    }
 
-        var products = {
-            name: 'products',
-            url: '/products',
-            templateUrl: 'products.html',
-            controller: 'ProductsController',
-        }
+    var products = {
+        name: 'products',
+        url: '/products',
+        templateUrl: 'products.html',
+        controller: 'ProductsController',
+    }
 
-        var contabilita = {
-            name: 'contabilita',
-            url: '/contabilita',
-            templateUrl: 'contabilita.html',
-            controller: 'ContabilitaController',
-        }
+    var purchases = {
+        name: 'purchases',
+        url: '/purchases',
+        templateUrl: 'purchases.html',
+        controller: 'PurchasesController',
+    }
 
-        $stateProvider.state(home);
-        $stateProvider.state(login);
-        $stateProvider.state(addAccount);
-        $stateProvider.state(registration);
-        $stateProvider.state(spesa);
-        $stateProvider.state(clientsList);
-        $stateProvider.state(subscription);
-        $stateProvider.state(products);
-        $stateProvider.state(contabilita);
+    $stateProvider.state(home);
+    $stateProvider.state(login);
+    $stateProvider.state(addAccount);
+    $stateProvider.state(registration);
+    $stateProvider.state(client);
+    $stateProvider.state(clientsList);
+    $stateProvider.state(product);
+    $stateProvider.state(products);
+    $stateProvider.state(purchases);
 
-    }]);
+    $urlRouterProvider.otherwise('/home');
+
+}]);
 
 /**********************************************************/
 
@@ -119,52 +125,144 @@ APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
 
 /**********************************************************/
 
-APP.controller('AddEditProductController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
-    function($scope, $stateParams, $state, $http, $filter, ProductService) {
+APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService',
+    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService) {
 
-    $scope.types = [
-        {value: 'Abbonamento', label: 'Abbonamento'},
-        {value: 'Merchandise', label: 'Merchandise'}
-    ];
+        $scope.clientId = $stateParams.clientId;
+        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
+        $scope.activeTab = 'weekly';
+        $scope.activeProductTab = 'sport';
 
-    $scope.durations = [
-        {value: 1, label: 'Mensile'},
-        {value: 6, label: 'Semestrale'},
-        {value: 12, label: 'Annuale'},
-    ];
+        ClientService.get($scope.clientId).then(function (success) {
+            $scope.client = success.data;
 
-    $scope.sports = ProductService.sports;
+            EntranceService.getAllByClientId($scope.client.id).then(function (success) {
+                $scope.entrances = EntranceService.getSplitted(success.data);
 
-    $scope.save = function (product) {
-        console.log(product);
-        $state.go('products');
-    }
+                PurchaseService.getByClientId($scope.clientId).then(function(success) {
+                    $scope.purchasesCount = success.data.length;
+                    $scope.purchases = PurchaseService.getSplitted(success.data);
+                    $scope.lastSubscription = PurchaseService.getLastPurchase($scope.purchases['sport']);
+                });
+
+                ProductService.getAll().then(function (successCallback) {
+                    $scope.products = successCallback.data;
+                });
+            });
+            ClientService.setStatus($scope.client, $rootScope.date);
+            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
+        });
+
+        ProductService.getAll().then(function (success) {
+            $scope.products = success.data;
+        });
+
+        $scope.addCertificate = function(client) {
+            client.certificateExpirationDate = $scope.certificateDate.setDate($scope.certificateDate.getDate() + 1);
+            ClientService.save(client).then(function (success) {
+                $state.reload();
+            });
+
+        };
+
+        $scope.addPurchase = function (purchase) {
+            purchase.client = $scope.client;
+            PurchaseService.save(purchase).then(function (successCallback) {
+                $state.reload();
+            })
+        };
+
+        $scope.addEntrance = function(client, sport) {
+            EntranceService.save({date: new Date(), client: client, sport: sport}).then(function (successCallback) {
+                $state.reload();
+            });
+        };
+
+        $scope.deleteEntrance = function(entrance) {
+            if (entrance.deleted) {
+                EntranceService.delete(entrance).then(function (successCallback) {
+                    $state.reload();
+                });
+            } else {
+                EntranceService.markAsDeleted(entrance).then(function (successCallback) {
+                    $state.reload();
+                });
+            }
+        };
+
+        $scope.isAlert = function(date) {
+            return ClientService.isAlert(new Date(date), $rootScope.date);
+        }
+
+        $scope.isExpired = function(date) {
+            return ClientService.isExpired(new Date(date), $rootScope.date);
+        }
+
+        $scope.uploadFile = function(files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("image", files[0]);
+
+            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(function (success) {
+                console.log(success);
+            }, function (error) {
+                console.log(error);
+            })
+
+        };
+
+        $scope.edit = function () {
+            console.log('update');
+        }
+
+        $scope.selectTab = function (tab) {
+            $scope.activeTab = tab;
+        }
+
+        $scope.isActiveTab = function (tab) {
+            return $scope.activeTab == tab;
+        }
+
+        $scope.selectProductTab = function (tab) {
+            $scope.activeProductTab = tab;
+        }
+
+        $scope.isActiveProductTab = function (tab) {
+            return $scope.activeProductTab == tab;
+        }
+
+        $scope.isEntrancesLimitReached = function (subscription) {
+            return subscription && subscription.product.maxEntrance <= $scope.entrances['weekly'].length;
+        }
 
     }]);
 
 /**********************************************************/
 
-APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', '$clientService', '$columnService',
-    function($scope, $rootScope, $stateParams, $state, $http, $clientService, $columnService) {
+APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ClientService', 'ColumnService',
+    function($scope, $rootScope, $stateParams, $state, $http, ClientService, ColumnService) {
+
+        $scope.column = 'id';
 
         $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
             $scope.clients = success.data;
             $scope.clients.forEach(function (client) {
-                $clientService.setStatus(client, $rootScope.date);
+                ClientService.setStatus(client, $rootScope.date);
             })
         }, function (error) {
             console.log('error: ', error);
         });
 
-        $scope.search = $rootScope.search;
-
         $scope.updateClient = function (client) {
             $scope.edit(client);
-            $clientService.save(client);
+            ClientService.save(client);
         };
 
         $scope.sortColumn = function (col) {
-            $columnService.sortColumn($scope, col);
+            ColumnService.sortColumn($scope, col);
         };
 
         $scope.edit = function (client) {
@@ -175,23 +273,6 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
         $scope.addClient = function () {
             UIkit.modal('#registration-modal').show();
         }
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('ContabilitaController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', '$columnService',
-    function($scope, $rootScope, $stateParams, $state, $http, $columnService) {
-
-        $http.get("http://localhost:8094/rocky-marciano" + '/contabilita').then(function (success) {
-            $scope.cashflows = success.data;
-        }, function (error) {
-            console.log('error: ', error);
-        });
-
-        $scope.sortColumn = function (col) {
-            $columnService.sortColumn($scope, col);
-        };
 
     }]);
 
@@ -243,28 +324,70 @@ APP.controller('LoginController', ['$scope', '$stateParams', '$state',
 
 /**********************************************************/
 
-APP.controller('ProductsController', ['$scope', '$stateParams', '$state', '$http', 'ProductService',
-    function($scope, $stateParams, $state, $http, ProductService) {
+APP.controller('ProductsController', ['$scope', '$stateParams', '$state', '$http', 'ProductService', 'PurchaseService',
+    function ($scope, $stateParams, $state, $http, ProductService, PurchaseService) {
+
+        $scope.types = [
+            {value: 'sport', label: 'Abbonamento'},
+            {value: 'merchandise', label: 'Merchandise'}
+        ];
+
+        $scope.durations = [
+            {value: 1, label: 'Mensile', multiplier: 1},
+            {value: 6, label: 'Semestrale', multiplier: 5/6},
+            {value: 12, label: 'Annuale', multiplier: 9/12},
+        ];
 
         ProductService.getAll().then(function (success) {
-            $scope.sports = success.data;
+            $scope.products = success.data;
+            $scope.products.forEach(function (product) {
+                PurchaseService.getByProductId(product.id).then(function (successCallback) {
+                    product.purchases = successCallback.data;
+                })
+            })
         });
 
         $scope.addProduct = function () {
-            UIkit.modal('#registration-modal').show();
-        }
+            UIkit.modal('#addEditProduct').show();
+        };
 
-        $scope.save = function (sport) {
-            ProductService.save(sport);
+        $scope.addProduct = function (product) {
+            console.log(product);
+            $scope.editProduct = {};
+            Object.assign($scope.editProduct, product);
+            UIkit.modal('#addEditProduct').show();
+        };
+
+        $scope.save = function (product) {
+            ProductService.save(product);
             $state.reload();
+        };
+
+        $scope.delete = function (product) {
+            ProductService.delete(product);
+            $state.reload();
+        };
+
+        $scope.hasPurchases = function (product) {
+            return product && product.purchases && product.purchases.length > 0;
         }
 
-        $scope.delete = function (sport) {
-            ProductService.delete(sport);
-            ProductService.getAll().then(function (success) {
-                $scope.sports = success.data;
-            });
-        }
+    }]);
+
+/**********************************************************/
+
+APP.controller('PurchasesController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ColumnService', 'PurchaseService',
+    function($scope, $rootScope, $stateParams, $state, $http, ColumnService, PurchaseService) {
+
+        $scope.column = 'date';
+
+        PurchaseService.getAll().then(function (successCallback) {
+            $scope.purchases = successCallback.data;
+        });
+
+        $scope.sortColumn = function (col) {
+            ColumnService.sortColumn($scope, col);
+        };
 
     }]);
 
@@ -293,174 +416,7 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
 
 /**********************************************************/
 
-APP.controller('SpesaController', ['$scope', '$stateParams','$state', '$http', '$filter',
-    function($scope, $stateParams, $state, $http, $filter) {
-
-    $scope.transaction = {};
-
-    $scope.save = function (spesa) {
-        $http.post("http://localhost:8094/rocky-marciano" + '/transactions', spesa).then(function (success) {
-            $state.go('contabilita');
-        }, function (error) {
-            console.log('error: ', error);
-        })
-
-    }
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('SubscriptionController', ['$scope', '$stateParams', '$state', '$clientService', '$subscriptionService', 'ProductService', '$http', '$rootScope', '$entranceService',
-    function($scope, $stateParams, $state, $clientService, $subscriptionService, ProductService, $http, $rootScope, $entranceService) {
-
-        $scope.clientId = $stateParams.clientId;
-        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
-
-        $scope.months = [
-            {value: 1, description: '1 mese', multiplier: 1},
-            {value: 6, description: '6 mesi', multiplier: 5/6},
-            {value: 12, description: '12 mesi', multiplier: 9/12},
-        ];
-
-        // carica a be
-        $scope.buys = [
-            {date: new Date(), description: 'Quota associazione', price: 50},
-            {date: new Date(), description: 'Abbonamento trimestrale', price: 150},
-            {date: new Date(), description: 'Tesseramento FPI 2020', price: 30},
-        ]
-
-        $clientService.get($scope.clientId).then(function (success) {
-            $scope.client = success.data;
-
-            $entranceService.getAllByClientId($scope.client.id).then(function (success) {
-                $scope.entrances = $entranceService.getOfThisWeek(success.data);
-
-                $subscriptionService.getByClientId($scope.clientId).then(function(success) {
-                    $scope.subscriptions = success.data;
-                    $scope.lastSubscription = success.data[success.data.length -1];
-                    if ($scope.lastSubscription.sport.maxEntrance <= $scope.entrances.length) {
-                        $scope.maxEntrance = true;
-                    }
-                });
-            });
-            $clientService.setStatus($scope.client, $rootScope.date);
-            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
-        });
-
-        ProductService.getAll().then(function (success) {
-            $scope.sports = success.data;
-        });
-
-        $scope.computeTotalPrice = function(subscription) {
-            if (subscription.sport && subscription.month) {
-                subscription.price = subscription.sport.price * subscription.month.value;
-                if(subscription.sport.name !== 'Boxe') {
-                    subscription.price = subscription.price * subscription.month.multiplier;
-                }
-            }
-        }
-
-        $scope.addCertificate = function(client) {
-            $clientService.save(client).then(function (success) {
-                $state.reload();
-            });
-
-        };
-
-        $scope.addSubscription = function (subscription) {
-            $scope.computeTotalPrice(subscription);
-            subscription.client = $scope.client;
-            $subscriptionService.save(subscription);
-            $state.reload();
-        };
-
-        $scope.addEntrance = function(client) {
-            $http.post("http://localhost:8094/rocky-marciano" + '/entrances', {date: new Date(), client: client}).then(function (success) {
-                $state.reload();
-            }, function (error) {
-                console.log(error);
-                $scope.error = error
-            });
-        };
-
-        $scope.changeFromDate = function (from) {
-            $scope.subscription.fromDate.setDate(from.getDate() + 1);
-            $scope.subscription.toDate.setMonth( $scope.subscription.fromDate.getMonth() + $scope.subscription.month.value );
-            $scope.subscription.duration = $scope.subscription.month.value;
-        }
-
-        $scope.changeDate = function (date) {
-            $scope.client.certificateExpirationDate.setDate(date.getDate() + 1);
-        }
-
-        $scope.isAlert = function(date) {
-            return $clientService.isAlert(new Date(date), $rootScope.date);
-        }
-
-        $scope.isExpired = function(date) {
-            return $clientService.isExpired(new Date(date), $rootScope.date);
-        }
-
-        $scope.uploadFile = function(files) {
-            var fd = new FormData();
-            //Take the first selected file
-            fd.append("image", files[0]);
-
-            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
-                headers: {'Content-Type': undefined },
-                transformRequest: angular.identity
-            }).then(function (success) {
-                console.log(success);
-            }, function (error) {
-                console.log(error);
-            })
-
-        };
-
-        $scope.edit = function () {
-            console.log('update');
-        }
-
-    }]);
-
-/**********************************************************/
-
-APP.service('ProductService', ['$http', function ($http) {
-
-    var self = this;
-
-    const path = "http://localhost:8094/rocky-marciano" + '/sports';
-
-    self.sports  = [];
-
-    self.getAll = function() {
-        return $http.get(path);
-    };
-
-    self.sports = self.getAll();
-
-    self.save = function (sport) {
-        $http.post(path, sport).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-    self.delete = function (sport) {
-        $http.delete(path + '/' + sport.name).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
-    }
-
-}]);
-
-/**********************************************************/
-
-APP.service('$clientService', ['$http', function ($http) {
+APP.service('ClientService', ['$http', function ($http) {
 
     var self = this;
 
@@ -497,7 +453,6 @@ APP.service('$clientService', ['$http', function ($http) {
     }
 
     self.setStatus = function (client, date) {
-        client.age = self.calculateAge(new Date(client.dateOfBirth));
 
         if (client.expirationDate == undefined || client.certificateExpirationDate == undefined) {
             client.isExpired = true;
@@ -532,17 +487,11 @@ APP.service('$clientService', ['$http', function ($http) {
         }
     }
 
-    self.calculateAge = function (birthday) { // birthday is a date
-        var ageDifMs = Date.now() - birthday.getTime();
-        var ageDate = new Date(ageDifMs); // miliseconds from epoch
-        return Math.abs(ageDate.getUTCFullYear() - 1970);
-    }
-
 }]);
 
 /**********************************************************/
 
-APP.service('$columnService', [ function () {
+APP.service('ColumnService', [ function () {
 
     var self = this;
 
@@ -558,30 +507,11 @@ APP.service('$columnService', [ function () {
 
 /**********************************************************/
 
-APP.service('$entranceService', ['$http', function ($http) {
+APP.service('EntranceService', ['$http', function ($http) {
 
     var self = this;
 
     const path = PATH + '/entrances';
-
-    self.getAllByClientId = function(clientId) {
-        return $http.get(path + '?clientId=' + clientId);
-    };
-
-    self.getOfThisWeek = function(entrances) {
-        var retval = [];
-
-        var today = new Date();
-        var firtyDayOfWeek = new Date().setDate(today.getDate() - today.getDay());
-        entrances.forEach(function (entrance) {
-            if (new Date(entrance.date) >= firtyDayOfWeek) {
-                retval.push(entrance);
-            }
-        })
-
-        return retval;
-    }
-
 
     self.save = function (entrance) {
         return $http.post(path, entrance);
@@ -591,26 +521,94 @@ APP.service('$entranceService', ['$http', function ($http) {
         return $http.get(path + '/' + id);
     };
 
+    self.getAllByClientId = function(clientId) {
+        return $http.get(path + '?clientId=' + clientId);
+    };
+
+    self.markAsDeleted = function(entrance) {
+        entrance.deleted = true;
+        return $http.post(path, entrance);
+    };
+
     self.delete = function (entrance) {
-        $http.delete(path + '/' + entrance.id).then(function (success) {
-            console.log('deleted: ', entrance.id)
-        }, function (error) {
-            console.log(error);
+        return $http.delete(path + '/' + entrance.id);
+    };
+
+    self.isThisWeek = function(entrance) {
+        var today = new Date();
+        var firtyDayOfWeek = new Date().setDate(today.getDate() - today.getDay());
+
+        if (new Date(entrance.date) >= firtyDayOfWeek) {
+            return true;
+        }
+
+        return false;
+    };
+
+    self.getSplitted = function(entrances) {
+        var retval = {
+            "weekly": [], "old": [], "deleted": [],
+        };
+
+        entrances.forEach(function (entrance) {
+            if (entrance.deleted) {
+                retval["deleted"].push(entrance);
+            } else if (self.isThisWeek(entrance)) {
+                retval["weekly"].push(entrance);
+            } else {
+                retval["old"].push(entrance);
+            }
         });
-    }
+
+        return retval;
+    };
 
 }]);
 
 /**********************************************************/
 
-APP.service('$subscriptionService', ['$http', function ($http) {
+APP.service('ProductService', ['$http', function ($http) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/subscription';
+    const path = "http://localhost:8094/rocky-marciano" + '/products';
 
-    self.save = function (subscription) {
-        return $http.post(path, subscription);
+    self.products  = [];
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.products = self.getAll();
+
+    self.save = function (product) {
+        $http.post(path, product).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    self.delete = function (product) {
+        $http.delete(path + '/' + product.id).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+}]);
+
+/**********************************************************/
+
+APP.service('PurchaseService', ['$http', function ($http) {
+
+    var self = this;
+
+    const path = "http://localhost:8094/rocky-marciano" + '/purchases';
+
+    self.save = function (purchase) {
+        return $http.post(path, purchase);
     };
 
     self.get = function (id) {
@@ -618,12 +616,42 @@ APP.service('$subscriptionService', ['$http', function ($http) {
     };
 
     self.getByClientId = function (id) {
-        return $http.get(path + '/client/' + id);
+        return $http.get(path + '?clientId=' + id);
     };
 
-    self.delete = function (subscription) {
-        $http.delete(path + '/' + subscription.id).then(function (success) {
-            console.log('deleted: ', subscription.id)
+    self.getByProductId = function (id) {
+        return $http.get(path + '?productId=' + id);
+    };
+
+    self.getAll = function () {
+        return $http.get(path);
+    };
+
+    self.getSplitted = function(purchases) {
+        var retval = {
+            "sport": [], "merchandise": [], "other": [],
+        };
+
+        purchases.forEach(function (purchase) {
+            if (purchase.product.type == "sport") {
+                retval["sport"].push(purchase);
+            } else if (purchase.product.type == "merchandise") {
+                retval["merchandise"].push(purchase);
+            } else {
+                retval["other"].push(purchase);
+            }
+        });
+
+        return retval;
+    };
+
+    self.getLastPurchase = function(purchases) {
+        return purchases[purchases.length -1];
+    }
+
+    self.delete = function (purchase) {
+        $http.delete(path + '/' + purchase.id).then(function (success) {
+            console.log('deleted: ', purchase.id)
         }, function (error) {
             console.log(error);
         });

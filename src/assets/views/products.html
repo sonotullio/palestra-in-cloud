@@ -1,9 +1,21 @@
 <div class="uk-section uk-padding">
-    <div class="uk-align-right">
-        <button class="uk-button uk-button-primary" ng-click="addProduct()">
-            Nuovo Prodotto
-        </button>
-    </div>
+
+    <!-- Navbar-->
+    <nav class="uk-navbar-container uk-padding-small" uk-navbar>
+        <div class="uk-navbar-left">
+            <span class="uk-badge uk-margin-small-right">{{products.length}}</span> <strong> Prodotti </strong>
+        </div>
+        <div class="uk-navbar-center">
+
+        </div>
+        <div class="uk-navbar-right">
+            <input ng-model="search" type="text" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Filtra...">
+            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right" ng-click="addProduct()"><span uk-icon="icon: plus"></span></button>
+            <button type="submit" class="uk-button uk-button-secondary uk-margin-small-right">Esporta</button>
+        </div>
+    </nav>
+
+    <!-- Products Table -->
     <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
         <thead>
         <tr>
@@ -13,31 +25,35 @@
             <th>Tipologia</th>
             <th>Limite Ingressi</th>
             <th>Durata</th>
+            <th>Numero di vendite</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="product in sports" ng-click="edit(product)">
-            <td>
-                <span> {{product.name}} </span>
+        <tr ng-repeat="product in products | filter: search">
+            <td ng-click="addProduct(product)">
+                <a class="uk-link-heading"><span> {{product.name}} </span></a>
             </td>
             <td>
                 <span> {{product.description}} </span>
             </td>
             <td>
-                <span> {{product.price}} </span>
+                <span> {{product.price | number: 2}} </span>
             </td>
             <td>
                 <span> {{product.type}} </span>
             </td>
-            <td>
+            <td class="uk-text-center">
                 <span> {{product.maxEntrance}} </span>
             </td>
-            <td>
+            <td class="uk-text-center">
                 <span> {{product.duration}} </span>
+            </td>
+            <td class="uk-text-center">
+                <span> {{product.purchases.length}} </span>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
 
-<div ng-include="'modals/addEditProduct.html'" ng-controller="AddEditProductController"></div>
+<div ng-include="'modals/productaddedit.html'"></div>

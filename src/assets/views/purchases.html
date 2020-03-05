@@ -1,8 +1,10 @@
 <div class="uk-section uk-padding">
 
-    <nav class="uk-navbar-container" uk-navbar>
+    <nav class="uk-navbar-container uk-padding-small" uk-navbar>
         <div class="uk-navbar-left">
-            <h3 class="uk-article-title"> Vendite </h3>
+            <span ng-if="purchases" class="uk-badge uk-margin-small-right">{{purchases.length}}</span>
+            <span ng-if="!purchases" class="uk-badge uk-margin-small-right">0</span>
+            <strong> Vendite </strong>
         </div>
         <div class="uk-navbar-center">
 
@@ -34,16 +36,16 @@
         <thead>
         <tr>
             <th ng-click="sortColumn('date')">Data</th>
-            <th ng-click="sortColumn('client')">Cliente</th>
-            <th ng-click="sortColumn('description')">Descrizione</th>
+            <th ng-click="sortColumn('client.surname')">Cliente</th>
+            <th ng-click="sortColumn('product.description')">Descrizione</th>
             <th ng-click="sortColumn('price')">Importo</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="cashflow in cashflows | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
+        <tr ng-repeat="cashflow in purchases | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
-            <td>{{cashflow.client}}</td>
-            <td>{{cashflow.description}}</td>
+            <td> {{cashflow.client.name}} {{cashflow.client.surname}} </td>
+            <td>{{cashflow.product.description}}</td>
             <td>{{cashflow.price | number: 2}}</td>
         </tr>
         </tbody>

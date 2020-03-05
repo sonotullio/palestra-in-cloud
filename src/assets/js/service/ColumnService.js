@@ -1,4 +1,4 @@
-APP.service('$columnService', [ function () {
+APP.service('ColumnService', [ function () {
 
     var self = this;
 

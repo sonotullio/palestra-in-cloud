@@ -1,4 +1,4 @@
-APP.service('$clientService', ['$http', function ($http) {
+APP.service('ClientService', ['$http', function ($http) {
 
     var self = this;
 
@@ -35,7 +35,6 @@ APP.service('$clientService', ['$http', function ($http) {
     }
 
     self.setStatus = function (client, date) {
-        client.age = self.calculateAge(new Date(client.dateOfBirth));
 
         if (client.expirationDate == undefined || client.certificateExpirationDate == undefined) {
             client.isExpired = true;
@@ -68,12 +67,6 @@ APP.service('$clientService', ['$http', function ($http) {
         } else {
             return false;
         }
-    }
-
-    self.calculateAge = function (birthday) { // birthday is a date
-        var ageDifMs = Date.now() - birthday.getTime();
-        var ageDate = new Date(ageDifMs); // miliseconds from epoch
-        return Math.abs(ageDate.getUTCFullYear() - 1970);
     }
 
 }]);

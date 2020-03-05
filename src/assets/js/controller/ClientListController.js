@@ -1,24 +1,24 @@
-APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', '$clientService', '$columnService',
-    function($scope, $rootScope, $stateParams, $state, $http, $clientService, $columnService) {
+APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ClientService', 'ColumnService',
+    function($scope, $rootScope, $stateParams, $state, $http, ClientService, ColumnService) {
+
+        $scope.column = 'id';
 
         $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
             $scope.clients = success.data;
             $scope.clients.forEach(function (client) {
-                $clientService.setStatus(client, $rootScope.date);
+                ClientService.setStatus(client, $rootScope.date);
             })
         }, function (error) {
             console.log('error: ', error);
         });
 
-        $scope.search = $rootScope.search;
-
         $scope.updateClient = function (client) {
             $scope.edit(client);
-            $clientService.save(client);
+            ClientService.save(client);
         };
 
         $scope.sortColumn = function (col) {
-            $columnService.sortColumn($scope, col);
+            ColumnService.sortColumn($scope, col);
         };
 
         $scope.edit = function (client) {

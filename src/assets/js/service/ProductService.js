@@ -2,30 +2,30 @@ APP.service('ProductService', ['$http', function ($http) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/sports';
+    const path = "http://localhost:8094/rocky-marciano" + '/products';
 
-    self.sports  = [];
+    self.products  = [];
 
     self.getAll = function() {
         return $http.get(path);
     };
 
-    self.sports = self.getAll();
+    self.products = self.getAll();
 
-    self.save = function (sport) {
-        $http.post(path, sport).then(function (success) {
+    self.save = function (product) {
+        $http.post(path, product).then(function (success) {
             self.getAll();
         }, function (error) {
             console.log(error);
         });
-    }
+    };
 
-    self.delete = function (sport) {
-        $http.delete(path + '/' + sport.name).then(function (success) {
+    self.delete = function (product) {
+        $http.delete(path + '/' + product.id).then(function (success) {
             self.getAll();
         }, function (error) {
             console.log(error);
         });
-    }
+    };
 
 }]);

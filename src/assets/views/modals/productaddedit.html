@@ -1,0 +1,79 @@
+<div id="addEditProduct" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 ng-if="!editProduct.id" class="uk-modal-title">Nuovo Prodotto</h2>
+        <h2 ng-if="editProduct.id" class="uk-modal-title">Modifica Prodotto</h2>
+
+        <form name="form" novalidate class="uk-form-stacked">
+
+            <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+                <div>
+                    <!-- Name -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="name">Nome</label>
+                        <input id="name" ng-model="editProduct.name" name="name" class="uk-input uk-form-width-large"
+                               type="text"
+                               required/>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="name">Descrizione</label>
+                        <input id="description" ng-model="editProduct.description" name="description"
+                               class="uk-input uk-form-width-large" type="text"
+                               required/>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="price">Prezzo</label>
+                        <input id="price" ng-model="editProduct.price" name="price" class="uk-input uk-form-width-large"
+                               type="number" required/>
+                    </div>
+
+                    <!-- Type -->
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="type"> Tipologia </label>
+                        <select id="type" ng-model="editProduct.type" class="uk-input uk-form-width-large" required>
+                            <option ng-repeat="type in types" ng-value="type.value">{{type.label}}</option>
+                        </select>
+                    </div>
+
+                    <div ng-if="editProduct.type == 'sport'">
+
+                        <!-- Max Entrance -->
+                        <div class="uk-margin">
+                            <label class="uk-form-label" for="maxEntrance">Limite di ingressi</label>
+                            <input id="maxEntrance" ng-model="editProduct.maxEntrance" name="maxEntrance"
+                                   class="uk-input uk-form-width-large" type="number"
+                                   required/>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="uk-margin">
+                            <label class="uk-form-label" for="type"> Durata </label>
+                            <select id="duration" ng-model="editProduct.duration" class="uk-input uk-form-width-large" required>
+                                <option ng-repeat="duration in durations" ng-value="duration.value"> {{duration.label}} </option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div ng-show="editProduct.type == 'merchandise'"></div>
+                </div>
+
+            </div>
+        </form>
+
+        <p>
+            <span class="uk-align-left">
+                <button class="uk-button uk-button-danger" type="button" ng-click="delete(editProduct)"
+                        ng-disabled="hasPurchases(editProduct)">Elimina</button>
+            </span>
+
+            <span class="uk-align-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancella</button>
+                <button class="uk-button uk-button-primary" type="button" ng-click="save(editProduct)"
+                        ng-disabled="!form.$valid">Conferma</button>
+            </span>
+        </p>
+    </div>
+</div>
