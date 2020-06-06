@@ -16,12 +16,15 @@ const runSequence = require('gulp4-run-sequence'); // gulp4
 var browserSync     = require('browser-sync').create();
 var gulpNgConfig    = require('gulp-ng-config');
 var addStream       = require('add-stream');
+var rev = require('gulp-rev');
+var revReplace = require('gulp-rev-replace');
 
 var path = {
     base: {
         app: 'src/',
         dist: 'public/'
     },
+    app: 'src/dashbee',
     vendor_npm: 'node_modules',
     js: 'src/assets/js',
     js_dest: 'public/assets/js',
@@ -49,6 +52,7 @@ var vendor = {
     less:[
     ]
 };
+
 
 var config = {
     server: {
@@ -81,6 +85,7 @@ gulp.task('js-main-dev', function() {
         files.push('!' + config.concat_exclude[i]);
     }
     files.push(path.js + '/**/*.js');
+    files.push(path.app + '/**/*.js');
     return gulp.src(files)
         .pipe(addStream.obj(makeDevConfig()))
         .pipe(addStream.obj(makeVersion()))
@@ -94,10 +99,14 @@ gulp.task('js-main-prod', function() {
         files.push('!' + config.concat_exclude[i]);
     }
     files.push(path.js + '/**/*.js');
+    files.push(path.app + '/**/*.js');
     return gulp.src(files)
         .pipe(addStream.obj(makeProdConfig()))
         .pipe(addStream.obj(makeVersion()))
         .pipe(concat('main.js', config.concat))
+        .pipe(rev())
+        .pipe(gulp.dest(path.js_dest))
+        .pipe(rev.manifest())
         .pipe(gulp.dest(path.js_dest));
 });
 
@@ -107,10 +116,14 @@ gulp.task('js-main-test', function() {
         files.push('!' + config.concat_exclude[i]);
     }
     files.push(path.js + '/**/*.js');
+    files.push(path.app + '/**/*.js');
     return gulp.src(files)
         .pipe(addStream.obj(makeTestConfig()))
         .pipe(addStream.obj(makeVersion()))
         .pipe(concat('main.js', config.concat))
+        .pipe(rev())
+        .pipe(gulp.dest(path.js_dest))
+        .pipe(rev.manifest())
         .pipe(gulp.dest(path.js_dest));
 });
 
@@ -120,10 +133,14 @@ gulp.task('js-main-pre', function() {
         files.push('!' + config.concat_exclude[i]);
     }
     files.push(path.js + '/**/*.js');
+    files.push(path.app + '/**/*.js');
     return gulp.src(files)
         .pipe(addStream.obj(makePreConfig()))
         .pipe(addStream.obj(makeVersion()))
         .pipe(concat('main.js', config.concat))
+        .pipe(rev())
+        .pipe(gulp.dest(path.js_dest))
+        .pipe(rev.manifest())
         .pipe(gulp.dest(path.js_dest));
 });
 
@@ -159,7 +176,10 @@ gulp.task('less', function () {
 var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
 
 gulp.task('html', function () {
-    return gulp.src(path.html + '/**/*.html')
+    var htmlDirs = [];
+    htmlDirs.push(path.html + '/**/*.html');
+    htmlDirs.push(path.app + '/**/*.html');
+    return gulp.src(htmlDirs)
         .pipe(htmlmin(config.html))
         .pipe(gulp.dest(path.html_dest))
         .pipe(browserSync.stream());
@@ -214,22 +234,31 @@ function makeDevConfig() {
         .pipe(gulpNgConfig('myApp.config'))
 }
 
+
+gulp.task('revreplace', gulp.series('js-main-dev', function(done) {
+    var manifest = gulp.src("./" + path.js_dest + "/rev-manifest.json");
+
+    return gulp.src(path.html + '/**/index.html')
+        .pipe(revReplace({manifest: manifest}))
+        .pipe(gulp.dest(path.html_dest));
+}));
+
 gulp.task('build-dev', gulp.series('html', 'images', 'fonts', 'svg', 'js-plugins','js-main-dev', 'less', function(done) {
     console.log('\x1b[32m', 'build-dev', '\x1b[0m');
     done();
 }));
 
-gulp.task('build-test', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-test', 'less']), function(done) {
+gulp.task('build-test', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-test', 'less', 'revreplace']), function(done) {
     console.log('\x1b[32m', 'Build test complete', '\x1b[0m');
     done();
 });
 
-gulp.task('build-pre', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-pre', 'less']), function(done) {
+gulp.task('build-pre', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-pre', 'less', 'revreplace']), function(done) {
     console.log('\x1b[32m', 'Build pre complete', '\x1b[0m');
     done();
 });
 
-gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'js-uglify', 'less']), function(done) {
+gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'js-uglify', 'less', 'revreplace']), function(done) {
     console.log('\x1b[32m', 'Build prod complete', '\x1b[0m');
     done();
 });
