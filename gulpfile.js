@@ -66,7 +66,8 @@ var config = {
     concat_exclude: [],
     less: {
         paths: vendor.less
-    }
+    },
+    open: false
 };
 
 gulp.task('connect', function() {
