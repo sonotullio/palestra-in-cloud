@@ -264,7 +264,7 @@ gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 
     done();
 });
 
-gulp.task('serve', gulp.series(['build-prod', 'connect']), function(done) {
+gulp.task('serve', gulp.series(['build-prod']), function(done) {
     console.log('\x1b[32m', 'serve Starting server at http://localhost:' + config.port, '\x1b[0m');
     done();
 });
