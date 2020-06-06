@@ -259,12 +259,12 @@ gulp.task('build-pre', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', '
     done();
 });
 
-gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'js-uglify', 'less', 'revreplace']), function(done) {
+gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'less']), function(done) {
     console.log('\x1b[32m', 'Build prod complete', '\x1b[0m');
     done();
 });
 
-gulp.task('serve', gulp.series(['build-prod']), function(done) {
+gulp.task('serve', gulp.series(['build-prod', 'connect']), function(done) {
     console.log('\x1b[32m', 'serve Starting server at http://localhost:' + config.port, '\x1b[0m');
     done();
 });
