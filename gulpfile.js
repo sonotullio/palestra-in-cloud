@@ -53,7 +53,6 @@ var vendor = {
     ]
 };
 
-
 var config = {
     server: {
         baseDir: path.base.dist
@@ -66,8 +65,7 @@ var config = {
     concat_exclude: [],
     less: {
         paths: vendor.less
-    },
-    open: false
+    }
 };
 
 gulp.task('connect', function() {
