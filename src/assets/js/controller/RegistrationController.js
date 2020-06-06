@@ -1,9 +1,9 @@
-APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
-    function($scope, $stateParams, $state, $http, $filter, ProductService) {
+APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService', 'ClientService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService, ClientService) {
 
     $scope.save = function (client) {
         client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
-        $http.post("http://localhost:8094/rocky-marciano" + '/clients', client).then(function (success) {
+        ClientService.save(client).then(function (success) {
             $state.go('clientsList');
         }, function (error) {
             console.log('error: ', error);

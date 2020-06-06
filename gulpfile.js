@@ -44,6 +44,7 @@ var vendor = {
         path.vendor_npm   + '/angular-ui-router/release/angular-ui-router.js',
         path.vendor_npm   + '/uikit/dist/js/uikit.js',
         path.vendor_npm   + '/uikit/dist/js/uikit-icons.min.js',
+        path.vendor_npm   + '/chart.js/dist/Chart.js',
     ],
     less:[
     ]
@@ -190,27 +191,27 @@ gulp.task('clean', function() {
 
 function makeVersion() {
     return gulp.src(path.base.app + '/version.json')
-        .pipe(gulpNgConfig('h14.version'))
+        .pipe(gulpNgConfig('myApp.version'))
 }
 
 function makeTestConfig() {
     return gulp.src('./config.test.json')
-        .pipe(gulpNgConfig('h14.config'))
+        .pipe(gulpNgConfig('myApp.config'))
 }
 
 function makeProdConfig() {
     return gulp.src('./config.prod.json')
-        .pipe(gulpNgConfig('h14.config'))
+        .pipe(gulpNgConfig('myApp.config'))
 }
 
 function makePreConfig() {
     return gulp.src('./config.pre.json')
-        .pipe(gulpNgConfig('h14.config'))
+        .pipe(gulpNgConfig('myApp.config'))
 }
 
 function makeDevConfig() {
     return gulp.src('./config.dev.json')
-        .pipe(gulpNgConfig('h14.config'))
+        .pipe(gulpNgConfig('myApp.config'))
 }
 
 gulp.task('build-dev', gulp.series('html', 'images', 'fonts', 'svg', 'js-plugins','js-main-dev', 'less', function(done) {

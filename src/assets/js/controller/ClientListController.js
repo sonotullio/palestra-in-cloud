@@ -3,7 +3,7 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $scope.column = 'id';
 
-        $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
+        ClientService.getAll().then(function (success) {
             $scope.clients = success.data;
             $scope.clients.forEach(function (client) {
                 ClientService.setStatus(client, $rootScope.date);

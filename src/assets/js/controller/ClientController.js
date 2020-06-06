@@ -1,5 +1,5 @@
-APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService',
-    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService) {
+APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService', 'apiUrl',
+    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService, apiUrl) {
 
         $scope.clientId = $stateParams.clientId;
         $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
@@ -76,7 +76,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
             //Take the first selected file
             fd.append("image", files[0]);
 
-            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
+            $http.post(apiUrl + '/clients' + '/image/' + $scope.clientId, fd, {
                 headers: {'Content-Type': undefined },
                 transformRequest: angular.identity
             }).then(function (success) {

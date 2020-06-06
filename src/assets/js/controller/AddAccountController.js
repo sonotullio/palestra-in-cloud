@@ -6,4 +6,6 @@ APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
         {title: 'Kick Boxe'},
         {title: 'Functional'},
     ]
+
+
     }]);

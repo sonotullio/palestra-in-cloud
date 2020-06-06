@@ -1,8 +1,8 @@
-APP.service('ClientService', ['$http', function ($http) {
+APP.service('ClientService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/clients';
+    const path = apiUrl + '/clients';
 
     var _MS_PER_DAY = 1000 * 60 * 60 * 24;
 

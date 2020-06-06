@@ -1,5 +1,6 @@
-var APP = angular.module('rocky-marciano', [
+var APP = angular.module('myApp', [
     'ui.router',
+    'myApp.config',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {
@@ -14,11 +15,27 @@ APP.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.patch = {};
 }]);
 
-APP.run([function () {
-    console.log('Angular is running');
+APP.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                    // or all selected files:
+                    // scope.fileread = changeEvent.target.files;
+                });
+            });
+        }
+    }
 }]);
 
-const PATH = "http://localhost:8094/rocky-marciano";
+APP.run([function () {
+    console.log('Palestra in Cloud is running!');
+}]);
+
 
 /**********************************************************/
 
@@ -90,11 +107,25 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'ProductsController',
     }
 
+    var courses = {
+        name: 'courses',
+        url: '/courses',
+        templateUrl: 'courses.html',
+        controller: 'CoursesController',
+    }
+
     var purchases = {
         name: 'purchases',
         url: '/purchases',
         templateUrl: 'purchases.html',
         controller: 'PurchasesController',
+    }
+
+    var statistics = {
+        name: 'statistics',
+        url: '/statistics',
+        templateUrl: 'statistics.html',
+        controller: 'StatisticsController',
     }
 
     $stateProvider.state(home);
@@ -105,11 +136,14 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(clientsList);
     $stateProvider.state(product);
     $stateProvider.state(products);
+    $stateProvider.state(courses);
     $stateProvider.state(purchases);
+    $stateProvider.state(statistics);
 
     $urlRouterProvider.otherwise('/home');
 
 }]);
+
 
 /**********************************************************/
 
@@ -121,12 +155,15 @@ APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
         {title: 'Kick Boxe'},
         {title: 'Functional'},
     ]
+
+
     }]);
+
 
 /**********************************************************/
 
-APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService',
-    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService) {
+APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService', 'apiUrl',
+    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService, apiUrl) {
 
         $scope.clientId = $stateParams.clientId;
         $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
@@ -203,7 +240,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
             //Take the first selected file
             fd.append("image", files[0]);
 
-            $http.post("http://localhost:8094/rocky-marciano" + '/clients' + '/image/' + $scope.clientId, fd, {
+            $http.post(apiUrl + '/clients' + '/image/' + $scope.clientId, fd, {
                 headers: {'Content-Type': undefined },
                 transformRequest: angular.identity
             }).then(function (success) {
@@ -240,6 +277,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
 
     }]);
 
+
 /**********************************************************/
 
 APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ClientService', 'ColumnService',
@@ -247,7 +285,7 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
         $scope.column = 'id';
 
-        $http.get("http://localhost:8094/rocky-marciano" + '/clients').then(function (success) {
+        ClientService.getAll().then(function (success) {
             $scope.clients = success.data;
             $scope.clients.forEach(function (client) {
                 ClientService.setStatus(client, $rootScope.date);
@@ -276,12 +314,71 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
 
     }]);
 
+
+/**********************************************************/
+
+APP.controller('CoursesController', ['$scope', '$stateParams', '$state', 'CoursesService', 'DownloadService', '$http', '$filter', 'apiUrl',
+    function ($scope, $stateParams, $state, CoursesService, DownloadService, $http, $filter, apiUrl) {
+
+        $scope.downloadTemplate = function() {
+            CoursesService.downloadTemplate().then(function(success){
+                var filename = "plan_template.xlsx";
+                DownloadService.downloadExcel(success.data, filename);
+            });
+
+        }
+
+        $scope.uploadFile = function(file) {
+            var url = apiUrl + "/courses/import";
+            $scope.uploadFileToUrl(file, url);
+        };
+
+        $scope.uploadFileToUrl = function(file, url) {
+            var fd = new FormData();
+            fd.append('file', file);
+            //fd.append('date', $scope.date);
+
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }).then(
+                function successCallback(response) {
+                    $scope.strategiesUpdated = [];
+
+                    response.data.forEach(function (strategy) {
+                        if (strategy.dateCreated !== strategy.lastUpdated) {
+                            $scope.strategiesUpdated.push(strategy);
+                        }
+                    });
+
+                    $scope.responseMsg =
+                        'Created: ' + (response.data.length - $scope.strategiesUpdated.length) + ' Exposures' +
+                        'Updated: ' + $scope.strategiesUpdated.length + ' Exposures';
+
+                    $scope.myFile = null;
+                },
+                function errorCallback(response) {
+                    $scope.myFile = null;
+                    $scope.errorMsg = response.data.message;
+                });
+        };
+
+        $scope.updateSearch = function () {
+            $scope.search = $filter('date')($scope.search, 'yyyy-MM-dd');
+
+            CoursesService.getAllByDate($scope.search).then(function (success) {
+                $scope.courses = success.data;
+            })
+
+        }
+
+    }]);
+
+
 /**********************************************************/
 
 APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state',
     function($scope, $rootScope, $stateParams, $state, ) {
-
-        console.log('Header Controller');
 
         $scope.click = function (section) {
             $scope.active = section;
@@ -393,12 +490,12 @@ APP.controller('PurchasesController', ['$scope', '$rootScope', '$stateParams', '
 
 /**********************************************************/
 
-APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService',
-    function($scope, $stateParams, $state, $http, $filter, ProductService) {
+APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService', 'ClientService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService, ClientService) {
 
     $scope.save = function (client) {
         client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
-        $http.post("http://localhost:8094/rocky-marciano" + '/clients', client).then(function (success) {
+        ClientService.save(client).then(function (success) {
             $state.go('clientsList');
         }, function (error) {
             console.log('error: ', error);
@@ -414,13 +511,119 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
 
     }]);
 
+
 /**********************************************************/
 
-APP.service('ClientService', ['$http', function ($http) {
+APP.controller('StatisticsController', ['$scope', '$stateParams', '$state', 'ColumnService', 'PurchaseService', 'EntranceService', 'ChartService',
+    function($scope, $stateParams, $state, ColumnService, PurchaseService, EntranceService, ChartService) {
+
+        $scope.purchaseCtx = $('#purchases');
+        $scope.purchasesChart = new Chart($scope.purchaseCtx, ChartService.default());
+
+        $scope.entrancesCtx = $('#entrances');
+        $scope.entrancesChart = new Chart($scope.entrancesCtx, ChartService.default());
+
+        PurchaseService.getAllMappedByProduct().then(function (successCallback) {
+            $scope.purchases = successCallback.data;
+
+            $scope.purchases.forEach(function (purchase) {
+                $scope.purchasesChart.data.labels.push(purchase.label)
+                $scope.purchasesChart.data.datasets[0].data.push(purchase.value);
+            });
+
+            $scope.purchasesChart.update();
+        });
+
+        EntranceService.getAllMappedByProduct().then(function (successCallback) {
+            $scope.entrances = successCallback.data;
+
+            $scope.entrances.forEach(function (entrance) {
+                $scope.entrancesChart.data.labels.push(entrance.label)
+                $scope.entrancesChart.data.datasets[0].data.push(entrance.value);
+            });
+
+            $scope.entrancesChart.update();
+        });
+
+    }]);
+
+/**********************************************************/
+
+APP.service('ChartService', [function () {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/clients';
+    self.default = function () {
+        return {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    maxBarThickness: 100,
+                    label: '',
+                    data: [],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                    }]
+                },
+                layout: {
+                    padding: {
+                        left: 5,
+                        right: 5,
+                        top: 5,
+                        bottom: 5
+                    }
+                },
+                legend: {
+                    display: false,
+                },
+            }
+        }
+    }
+
+}]);
+
+
+
+
+/**********************************************************/
+
+APP.service('ClientService', ['$http', 'apiUrl', function ($http, apiUrl) {
+
+    var self = this;
+
+    const path = apiUrl + '/clients';
 
     var _MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -489,6 +692,7 @@ APP.service('ClientService', ['$http', function ($http) {
 
 }]);
 
+
 /**********************************************************/
 
 APP.service('ColumnService', [ function () {
@@ -507,11 +711,109 @@ APP.service('ColumnService', [ function () {
 
 /**********************************************************/
 
-APP.service('EntranceService', ['$http', function ($http) {
+APP.service('CoursesService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = PATH + '/entrances';
+    const path = apiUrl + '/courses';
+
+    self.courses  = [];
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.getAllByDate = function(date) {
+        return $http.get(path + '?date=' + date);
+    };
+
+    self.courses = self.getAll();
+
+    self.save = function (product) {
+        $http.post(path, product).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    self.delete = function (product) {
+        $http.delete(path + '/' + product.id).then(function (success) {
+            self.getAll();
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    self.downloadTemplate = function () {
+        return $http({
+            url: path + "/template",
+            method: "GET",
+            headers: {'Content-type': 'application/json'},
+            responseType: 'arraybuffer'
+        })
+    }
+
+    self.import = function () {
+        return $http({
+            url: path + "/import",
+            method: "POST",
+            headers: {'Content-type': 'application/json'},
+            responseType: 'arraybuffer'
+        })
+    }
+
+    return self;
+
+}]);
+
+
+/**********************************************************/
+
+APP.service('DownloadService', ['$http', 'apiUrl', function ($http, apiUrl) {
+
+    var self = this;
+
+    self.downloadExcel = function (data, fileName) {
+        var file = new Blob([data], {type: 'application/vnd.ms-excel'});
+        //IE11 & Edge
+        if (navigator.msSaveBlob) {
+            navigator.msSaveBlob(file, fileName);
+        } else {
+            //In FF link must be added to DOM to be clicked
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(file);
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    self.uploadFileToUrl = function (fd, url) {
+
+        url = apiUrl + url;
+
+        return $http.post(url, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined},
+            data: {date:new Date()}
+        });
+
+    }
+
+    return self;
+
+}])
+
+
+/**********************************************************/
+
+APP.service('EntranceService', ['$http', 'apiUrl', function ($http, apiUrl) {
+
+    var self = this;
+
+    const path = apiUrl + '/entrances';
 
     self.save = function (entrance) {
         return $http.post(path, entrance);
@@ -519,6 +821,14 @@ APP.service('EntranceService', ['$http', function ($http) {
 
     self.get = function (id) {
         return $http.get(path + '/' + id);
+    };
+
+    self.getAll = function () {
+        return $http.get(path);
+    };
+
+    self.getAllMappedByProduct = function () {
+        return $http.get(path + '/map');
     };
 
     self.getAllByClientId = function(clientId) {
@@ -565,13 +875,14 @@ APP.service('EntranceService', ['$http', function ($http) {
 
 }]);
 
+
 /**********************************************************/
 
-APP.service('ProductService', ['$http', function ($http) {
+APP.service('ProductService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/products';
+    const path = apiUrl + '/products';
 
     self.products  = [];
 
@@ -599,13 +910,14 @@ APP.service('ProductService', ['$http', function ($http) {
 
 }]);
 
+
 /**********************************************************/
 
-APP.service('PurchaseService', ['$http', function ($http) {
+APP.service('PurchaseService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/purchases';
+    const path = apiUrl + '/purchases';
 
     self.save = function (purchase) {
         return $http.post(path, purchase);
@@ -621,6 +933,10 @@ APP.service('PurchaseService', ['$http', function ($http) {
 
     self.getByProductId = function (id) {
         return $http.get(path + '?productId=' + id);
+    };
+
+    self.getAllMappedByProduct = function () {
+        return $http.get(path + '/map');
     };
 
     self.getAll = function () {
@@ -659,14 +975,15 @@ APP.service('PurchaseService', ['$http', function ($http) {
 
 }]);
 
+
 /**********************************************************/
 
-angular.module("h14.config", [])
-.constant("apiUrl", "http://localhost:8094/rocky-marciano")
+angular.module("myApp.config", [])
+.constant("apiUrl", "http://localhost:8094/palestra-in-cloud")
 .constant("enableRouteDebug", false);
 
 
 /**********************************************************/
 
-angular.module("h14.version", [])
+angular.module("myApp.version", [])
 .constant("version", "0.0.1");

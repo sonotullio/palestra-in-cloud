@@ -1,0 +1,64 @@
+<div class="uk-section uk-padding">
+
+    <!-- Navbar-->
+    <nav class="uk-navbar-container uk-padding-small" uk-navbar>
+        <div class="uk-navbar-left">
+            <span class="uk-badge uk-margin-small-right">{{courses.length}}</span> <strong> Corsi </strong>
+        </div>
+        <div class="uk-navbar-center">
+
+        </div>
+        <div class="uk-navbar-right">
+            <input ng-model="search" ng-change="updateSearch()" type="date" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Filtra...">
+
+            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right">
+                <span uk-icon="icon: plus">
+                    <input type="file" name="file" fileread="myFile" style="opacity: 0;"/>
+                </span>
+            </button>
+
+            <button ng-show="myFile != undefined && myFile != null" ng-click="uploadFile(myFile)" class="uk-button uk-button-secondary uk-margin-small-right">
+                Importa Corsi
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- Products Table -->
+    <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Orario</th>
+            <th>Fine</th>
+            <th>Sport</th>
+            <th>Prenotazioni</th>
+            <th>Limite Ingressi</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="course in courses | orderBy: 'slot'">
+            <td>
+                <span> {{course.date}} </span>
+            </td>
+            <td>
+                <span> {{course.startTime | date: 'hh:mm'}} </span>
+            </td>
+            <td>
+                <span> {{course.finishTime | date: 'hh:mm'}} </span>
+            </td>
+            <td>
+                <span> {{course.sport}} </span>
+            </td>
+            <td>
+                <span> {{course.prenotation}} </span>
+            </td>
+            <td>
+                <span> {{course.prenotationMax}} </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div ng-include="'modals/productaddedit.html'"></div>

@@ -1,5 +1,6 @@
-var APP = angular.module('rocky-marciano', [
+var APP = angular.module('myApp', [
     'ui.router',
+    'myApp.config',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {
@@ -14,8 +15,23 @@ APP.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.patch = {};
 }]);
 
-APP.run([function () {
-    console.log('Angular is running');
+APP.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                    // or all selected files:
+                    // scope.fileread = changeEvent.target.files;
+                });
+            });
+        }
+    }
 }]);
 
-const PATH = "http://localhost:8094/rocky-marciano";
+APP.run([function () {
+    console.log('Palestra in Cloud is running!');
+}]);

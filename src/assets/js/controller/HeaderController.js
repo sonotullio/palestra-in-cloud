@@ -1,8 +1,6 @@
 APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state',
     function($scope, $rootScope, $stateParams, $state, ) {
 
-        console.log('Header Controller');
-
         $scope.click = function (section) {
             $scope.active = section;
         }

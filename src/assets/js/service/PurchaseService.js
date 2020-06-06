@@ -1,8 +1,8 @@
-APP.service('PurchaseService', ['$http', function ($http) {
+APP.service('PurchaseService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/purchases';
+    const path = apiUrl + '/purchases';
 
     self.save = function (purchase) {
         return $http.post(path, purchase);
@@ -18,6 +18,10 @@ APP.service('PurchaseService', ['$http', function ($http) {
 
     self.getByProductId = function (id) {
         return $http.get(path + '?productId=' + id);
+    };
+
+    self.getAllMappedByProduct = function () {
+        return $http.get(path + '/map');
     };
 
     self.getAll = function () {

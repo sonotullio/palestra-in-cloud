@@ -1,8 +1,8 @@
-APP.service('ProductService', ['$http', function ($http) {
+APP.service('ProductService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = "http://localhost:8094/rocky-marciano" + '/products';
+    const path = apiUrl + '/products';
 
     self.products  = [];
 

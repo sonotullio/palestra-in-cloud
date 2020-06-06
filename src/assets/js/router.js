@@ -66,11 +66,25 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'ProductsController',
     }
 
+    var courses = {
+        name: 'courses',
+        url: '/courses',
+        templateUrl: 'courses.html',
+        controller: 'CoursesController',
+    }
+
     var purchases = {
         name: 'purchases',
         url: '/purchases',
         templateUrl: 'purchases.html',
         controller: 'PurchasesController',
+    }
+
+    var statistics = {
+        name: 'statistics',
+        url: '/statistics',
+        templateUrl: 'statistics.html',
+        controller: 'StatisticsController',
     }
 
     $stateProvider.state(home);
@@ -81,7 +95,9 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(clientsList);
     $stateProvider.state(product);
     $stateProvider.state(products);
+    $stateProvider.state(courses);
     $stateProvider.state(purchases);
+    $stateProvider.state(statistics);
 
     $urlRouterProvider.otherwise('/home');
 

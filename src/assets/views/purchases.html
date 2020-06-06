@@ -46,7 +46,7 @@
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
             <td> {{cashflow.client.name}} {{cashflow.client.surname}} </td>
             <td>{{cashflow.product.description}}</td>
-            <td>{{cashflow.price | number: 2}}</td>
+            <td>{{cashflow.product.price | number: 2}}</td>
         </tr>
         </tbody>
     </table>

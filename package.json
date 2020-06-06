@@ -1,5 +1,5 @@
 {
-  "name": "rocky-marciano",
+  "name": "palestra-in-cloud",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,6 +13,7 @@
     "angular": "^1.7.9",
     "angular-ui-router": "^1.0.24",
     "browser-sync": "^2.26.7",
+    "chart.js": "^2.9.3",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-clean": "^0.4.0",

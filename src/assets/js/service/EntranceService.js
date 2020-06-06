@@ -1,8 +1,8 @@
-APP.service('EntranceService', ['$http', function ($http) {
+APP.service('EntranceService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     var self = this;
 
-    const path = PATH + '/entrances';
+    const path = apiUrl + '/entrances';
 
     self.save = function (entrance) {
         return $http.post(path, entrance);
@@ -10,6 +10,14 @@ APP.service('EntranceService', ['$http', function ($http) {
 
     self.get = function (id) {
         return $http.get(path + '/' + id);
+    };
+
+    self.getAll = function () {
+        return $http.get(path);
+    };
+
+    self.getAllMappedByProduct = function () {
+        return $http.get(path + '/map');
     };
 
     self.getAllByClientId = function(clientId) {
