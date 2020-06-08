@@ -24,6 +24,7 @@
                 <th ng-click="sortColumn('phone')">cellulare</th>
                 <th ng-click="sortColumn('dateOfBirth')">data di nascita</th>
                 <th>Note</th>
+                <th>Azioni</th>
             </tr>
             </thead>
             <tbody>
@@ -54,6 +55,11 @@
                 <td>
                     <span ng-show="!client.isEditing">{{client.note}}</span>
                     <input ng-model="client.note" ng-show="client.isEditing" class="uk-input"/>
+                </td>
+                <td>
+                    <button ng-show="!client.isEditing" ng-click="client.isEditing = true" class="uk-button uk-button-small uk-button-primary"><span uk-icon="pencil"></span></button>
+                    <button ng-show="client.isEditing" ng-click="save(client)" class="uk-button uk-button-small uk-button-secondary"><span uk-icon="check"></span></button>
+                    <button ng-show="client.isEditing" ng-click="client.isEditing = false" class="uk-button uk-button-small uk-button-danger"><span uk-icon="close"></span></button>
                 </td>
             </tr>
             </tbody>

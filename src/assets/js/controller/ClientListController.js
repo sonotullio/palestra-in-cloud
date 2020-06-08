@@ -12,18 +12,14 @@ APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams',
             console.log('error: ', error);
         });
 
-        $scope.updateClient = function (client) {
-            $scope.edit(client);
-            ClientService.save(client);
+        $scope.save = function (client) {
+            client.isEditing = false;
+            ClientService.save(client).then(function (clientSuccess) {
+            })
         };
 
         $scope.sortColumn = function (col) {
             ColumnService.sortColumn($scope, col);
-        };
-
-        $scope.edit = function (client) {
-            client.isEditing = !client.isEditing;
-            $scope.isEditingDisabled = !$scope.isEditingDisabled;
         };
 
         $scope.addClient = function () {
