@@ -1,6 +1,6 @@
-var APP = angular.module('myApp', [
+var APP = angular.module('app', [
     'ui.router',
-    'myApp.config',
+    'app.config',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {

@@ -1,4 +1,4 @@
 {
-  "apiUrl": "/palestra-in-cloud",
+  "apiUrl": "http://palestraincloudapp-env.eba-dizxdk6u.eu-west-1.elasticbeanstalk.com/palestra-in-cloud",
   "enableRouteDebug": false
 }

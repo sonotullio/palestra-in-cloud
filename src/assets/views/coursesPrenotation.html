@@ -10,22 +10,6 @@
         </div>
         <div class="uk-navbar-right">
             <input ng-model="search" ng-change="updateSearch()" type="date" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Filtra...">
-
-            <button ng-click="downloadTemplate()" type="submit" class="uk-button uk-button-default uk-margin-small-right">
-                <span uk-icon="icon: cloud-download">
-                </span>
-            </button>
-
-            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right" style="position: relative">
-                <span uk-icon="icon: plus">
-                    <input type="file" name="file" fileread="myFile" style="opacity: 0; width: 100%; height: 100%; position: absolute;  right: 0;  top: 0;" />
-                </span>
-            </button>
-
-            <button ng-show="myFile != undefined && myFile != null" ng-click="uploadFile(myFile)" class="uk-button uk-button-secondary uk-margin-small-right">
-                Importa Corsi
-            </button>
-
         </div>
     </nav>
 
@@ -39,10 +23,11 @@
             <th>Sport</th>
             <th>Prenotazioni</th>
             <th>Limite Ingressi</th>
+            <th>Azioni</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="course in courses | orderBy: 'slot'">
+        <tr ng-repeat="course in courses | orderBy: 'course.startTime'" ng-click="courseDetails(course)" href="#course-details" uk-toggle>
             <td>
                 <span> {{course.date}} </span>
             </td>
@@ -61,9 +46,28 @@
             <td>
                 <span> {{course.prenotationMax}} </span>
             </td>
+            <td>
+                <button ng-hide="prenotato(course) || course.prenotation >= course.prenotationMax" ng-click="prenota(course)" class="uk-button uk-button-primary">
+                    Prenota
+                </button>
+                <button ng-show="prenotato(course)" ng-click="annullaPrenotazione(course)" class="uk-button uk-button-primary">
+                    Annulla Prenotazione
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
 </div>
 
-<div ng-include="'modals/productaddedit.html'"></div>
+<!-- This is the modal -->
+<div id="course-details" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">{{selectedCourse.sport}}  {{selectedCourse.startTime | date: 'hh:mm'}}</h2>
+        <ul>
+            <li ng-repeat="user in selectedCourse.users">{{user.cf}}</li>
+        </ul>
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Ok</button>
+        </p>
+    </div>
+</div>

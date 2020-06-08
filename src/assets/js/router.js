@@ -73,6 +73,16 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'CoursesController',
     }
 
+    var coursesPrenotation = {
+        name: 'coursesPrenotation',
+        url: '/coursesPrenotation',
+        templateUrl: 'coursesPrenotation.html',
+        controller: 'CoursesPrenotationController',
+        params: {
+            user: { squash: true, value: null },
+        },
+    }
+
     var purchases = {
         name: 'purchases',
         url: '/purchases',
@@ -96,6 +106,7 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(product);
     $stateProvider.state(products);
     $stateProvider.state(courses);
+    $stateProvider.state(coursesPrenotation);
     $stateProvider.state(purchases);
     $stateProvider.state(statistics);
 

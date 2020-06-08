@@ -1,4 +1,4 @@
 {
-  "apiUrl": "http://localhost:8094/palestra-in-cloud",
+  "apiUrl": "http://localhost:5000/palestra-in-cloud",
   "enableRouteDebug": false
 }

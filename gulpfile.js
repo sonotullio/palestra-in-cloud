@@ -210,27 +210,27 @@ gulp.task('clean', function() {
 
 function makeVersion() {
     return gulp.src(path.base.app + '/version.json')
-        .pipe(gulpNgConfig('myApp.version'))
+        .pipe(gulpNgConfig('app.version'))
 }
 
 function makeTestConfig() {
     return gulp.src('./config.test.json')
-        .pipe(gulpNgConfig('myApp.config'))
+        .pipe(gulpNgConfig('app.config'))
 }
 
 function makeProdConfig() {
     return gulp.src('./config.prod.json')
-        .pipe(gulpNgConfig('myApp.config'))
+        .pipe(gulpNgConfig('app.config'))
 }
 
 function makePreConfig() {
     return gulp.src('./config.pre.json')
-        .pipe(gulpNgConfig('myApp.config'))
+        .pipe(gulpNgConfig('app.config'))
 }
 
 function makeDevConfig() {
     return gulp.src('./config.dev.json')
-        .pipe(gulpNgConfig('myApp.config'))
+        .pipe(gulpNgConfig('app.config'))
 }
 
 
@@ -257,7 +257,7 @@ gulp.task('build-pre', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', '
     done();
 });
 
-gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'less']), function(done) {
+gulp.task('build-prod', gulp.series(['clean', 'html', 'images', 'fonts', 'svg', 'js-plugins', 'js-main-prod', 'js-uglify', 'less', 'revreplace']), function(done) {
     console.log('\x1b[32m', 'Build prod complete', '\x1b[0m');
     done();
 });

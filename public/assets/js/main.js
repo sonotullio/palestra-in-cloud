@@ -1,6 +1,6 @@
-var APP = angular.module('myApp', [
+var APP = angular.module('app', [
     'ui.router',
-    'myApp.config',
+    'app.config',
 ]);
 
 APP.config(['$httpProvider', function ($httpProvider) {
@@ -114,6 +114,16 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'CoursesController',
     }
 
+    var coursesPrenotation = {
+        name: 'coursesPrenotation',
+        url: '/coursesPrenotation',
+        templateUrl: 'coursesPrenotation.html',
+        controller: 'CoursesPrenotationController',
+        params: {
+            user: { squash: true, value: null },
+        },
+    }
+
     var purchases = {
         name: 'purchases',
         url: '/purchases',
@@ -137,6 +147,7 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(product);
     $stateProvider.state(products);
     $stateProvider.state(courses);
+    $stateProvider.state(coursesPrenotation);
     $stateProvider.state(purchases);
     $stateProvider.state(statistics);
 
@@ -144,408 +155,6 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
 
 }]);
 
-
-/**********************************************************/
-
-APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
-    function($scope, $stateParams, $state, ) {
-
-    $scope.sports = [
-        {title: 'Boxe'},
-        {title: 'Kick Boxe'},
-        {title: 'Functional'},
-    ]
-
-
-    }]);
-
-
-/**********************************************************/
-
-APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService', 'apiUrl',
-    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService, apiUrl) {
-
-        $scope.clientId = $stateParams.clientId;
-        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
-        $scope.activeTab = 'weekly';
-        $scope.activeProductTab = 'sport';
-
-        ClientService.get($scope.clientId).then(function (success) {
-            $scope.client = success.data;
-
-            EntranceService.getAllByClientId($scope.client.id).then(function (success) {
-                $scope.entrances = EntranceService.getSplitted(success.data);
-
-                PurchaseService.getByClientId($scope.clientId).then(function(success) {
-                    $scope.purchasesCount = success.data.length;
-                    $scope.purchases = PurchaseService.getSplitted(success.data);
-                    $scope.lastSubscription = PurchaseService.getLastPurchase($scope.purchases['sport']);
-                });
-
-                ProductService.getAll().then(function (successCallback) {
-                    $scope.products = successCallback.data;
-                });
-            });
-            ClientService.setStatus($scope.client, $rootScope.date);
-            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
-        });
-
-        ProductService.getAll().then(function (success) {
-            $scope.products = success.data;
-        });
-
-        $scope.addCertificate = function(client) {
-            client.certificateExpirationDate = $scope.certificateDate.setDate($scope.certificateDate.getDate() + 1);
-            ClientService.save(client).then(function (success) {
-                $state.reload();
-            });
-
-        };
-
-        $scope.addPurchase = function (purchase) {
-            purchase.client = $scope.client;
-            PurchaseService.save(purchase).then(function (successCallback) {
-                $state.reload();
-            })
-        };
-
-        $scope.addEntrance = function(client, sport) {
-            EntranceService.save({date: new Date(), client: client, sport: sport}).then(function (successCallback) {
-                $state.reload();
-            });
-        };
-
-        $scope.deleteEntrance = function(entrance) {
-            if (entrance.deleted) {
-                EntranceService.delete(entrance).then(function (successCallback) {
-                    $state.reload();
-                });
-            } else {
-                EntranceService.markAsDeleted(entrance).then(function (successCallback) {
-                    $state.reload();
-                });
-            }
-        };
-
-        $scope.isAlert = function(date) {
-            return ClientService.isAlert(new Date(date), $rootScope.date);
-        }
-
-        $scope.isExpired = function(date) {
-            return ClientService.isExpired(new Date(date), $rootScope.date);
-        }
-
-        $scope.uploadFile = function(files) {
-            var fd = new FormData();
-            //Take the first selected file
-            fd.append("image", files[0]);
-
-            $http.post(apiUrl + '/clients' + '/image/' + $scope.clientId, fd, {
-                headers: {'Content-Type': undefined },
-                transformRequest: angular.identity
-            }).then(function (success) {
-                console.log(success);
-            }, function (error) {
-                console.log(error);
-            })
-
-        };
-
-        $scope.edit = function () {
-            console.log('update');
-        }
-
-        $scope.selectTab = function (tab) {
-            $scope.activeTab = tab;
-        }
-
-        $scope.isActiveTab = function (tab) {
-            return $scope.activeTab == tab;
-        }
-
-        $scope.selectProductTab = function (tab) {
-            $scope.activeProductTab = tab;
-        }
-
-        $scope.isActiveProductTab = function (tab) {
-            return $scope.activeProductTab == tab;
-        }
-
-        $scope.isEntrancesLimitReached = function (subscription) {
-            return subscription && subscription.product.maxEntrance <= $scope.entrances['weekly'].length;
-        }
-
-    }]);
-
-
-/**********************************************************/
-
-APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ClientService', 'ColumnService',
-    function($scope, $rootScope, $stateParams, $state, $http, ClientService, ColumnService) {
-
-        $scope.column = 'id';
-
-        ClientService.getAll().then(function (success) {
-            $scope.clients = success.data;
-            $scope.clients.forEach(function (client) {
-                ClientService.setStatus(client, $rootScope.date);
-            })
-        }, function (error) {
-            console.log('error: ', error);
-        });
-
-        $scope.updateClient = function (client) {
-            $scope.edit(client);
-            ClientService.save(client);
-        };
-
-        $scope.sortColumn = function (col) {
-            ColumnService.sortColumn($scope, col);
-        };
-
-        $scope.edit = function (client) {
-            client.isEditing = !client.isEditing;
-            $scope.isEditingDisabled = !$scope.isEditingDisabled;
-        };
-
-        $scope.addClient = function () {
-            UIkit.modal('#registration-modal').show();
-        }
-
-    }]);
-
-
-/**********************************************************/
-
-APP.controller('CoursesController', ['$scope', '$stateParams', '$state', 'CoursesService', 'DownloadService', '$http', '$filter', 'apiUrl',
-    function ($scope, $stateParams, $state, CoursesService, DownloadService, $http, $filter, apiUrl) {
-
-        $scope.downloadTemplate = function() {
-            CoursesService.downloadTemplate().then(function(success){
-                var filename = "plan_template.xlsx";
-                DownloadService.downloadExcel(success.data, filename);
-            });
-
-        }
-
-        $scope.uploadFile = function(file) {
-            var url = apiUrl + "/courses/import";
-            $scope.uploadFileToUrl(file, url);
-        };
-
-        $scope.uploadFileToUrl = function(file, url) {
-            var fd = new FormData();
-            fd.append('file', file);
-            //fd.append('date', $scope.date);
-
-            $http.post(url, fd, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            }).then(
-                function successCallback(response) {
-                    $scope.strategiesUpdated = [];
-
-                    response.data.forEach(function (strategy) {
-                        if (strategy.dateCreated !== strategy.lastUpdated) {
-                            $scope.strategiesUpdated.push(strategy);
-                        }
-                    });
-
-                    $scope.responseMsg =
-                        'Created: ' + (response.data.length - $scope.strategiesUpdated.length) + ' Exposures' +
-                        'Updated: ' + $scope.strategiesUpdated.length + ' Exposures';
-
-                    $scope.myFile = null;
-                },
-                function errorCallback(response) {
-                    $scope.myFile = null;
-                    $scope.errorMsg = response.data.message;
-                });
-        };
-
-        $scope.updateSearch = function () {
-            $scope.search = $filter('date')($scope.search, 'yyyy-MM-dd');
-
-            CoursesService.getAllByDate($scope.search).then(function (success) {
-                $scope.courses = success.data;
-            })
-
-        }
-
-    }]);
-
-
-/**********************************************************/
-
-APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state',
-    function($scope, $rootScope, $stateParams, $state, ) {
-
-        $scope.click = function (section) {
-            $scope.active = section;
-        }
-
-        $scope.isActive = function (section) {
-            return $scope.active == section;
-        }
-
-        $scope.openClientCard = function (id) {
-            $state.go('client', {id:id}, {reload: true})
-        }
-
-        $rootScope.date = new Date();
-        $scope.date = $rootScope.date;
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('HomepageController', ['$scope', '$stateParams', '$state',
-    function($scope, $stateParams, $state, ) {
-
-        $scope.addAccount = function () {
-            $state.go('addAccount');
-        }
-
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('LoginController', ['$scope', '$stateParams', '$state',
-    function($scope, $stateParams, $state, ) {
-
-    console.log('Login Controller');
-
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('ProductsController', ['$scope', '$stateParams', '$state', '$http', 'ProductService', 'PurchaseService',
-    function ($scope, $stateParams, $state, $http, ProductService, PurchaseService) {
-
-        $scope.types = [
-            {value: 'sport', label: 'Abbonamento'},
-            {value: 'merchandise', label: 'Merchandise'}
-        ];
-
-        $scope.durations = [
-            {value: 1, label: 'Mensile', multiplier: 1},
-            {value: 6, label: 'Semestrale', multiplier: 5/6},
-            {value: 12, label: 'Annuale', multiplier: 9/12},
-        ];
-
-        ProductService.getAll().then(function (success) {
-            $scope.products = success.data;
-            $scope.products.forEach(function (product) {
-                PurchaseService.getByProductId(product.id).then(function (successCallback) {
-                    product.purchases = successCallback.data;
-                })
-            })
-        });
-
-        $scope.addProduct = function () {
-            UIkit.modal('#addEditProduct').show();
-        };
-
-        $scope.addProduct = function (product) {
-            console.log(product);
-            $scope.editProduct = {};
-            Object.assign($scope.editProduct, product);
-            UIkit.modal('#addEditProduct').show();
-        };
-
-        $scope.save = function (product) {
-            ProductService.save(product);
-            $state.reload();
-        };
-
-        $scope.delete = function (product) {
-            ProductService.delete(product);
-            $state.reload();
-        };
-
-        $scope.hasPurchases = function (product) {
-            return product && product.purchases && product.purchases.length > 0;
-        }
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('PurchasesController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ColumnService', 'PurchaseService',
-    function($scope, $rootScope, $stateParams, $state, $http, ColumnService, PurchaseService) {
-
-        $scope.column = 'date';
-
-        PurchaseService.getAll().then(function (successCallback) {
-            $scope.purchases = successCallback.data;
-        });
-
-        $scope.sortColumn = function (col) {
-            ColumnService.sortColumn($scope, col);
-        };
-
-    }]);
-
-/**********************************************************/
-
-APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService', 'ClientService',
-    function($scope, $stateParams, $state, $http, $filter, ProductService, ClientService) {
-
-    $scope.save = function (client) {
-        client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
-        ClientService.save(client).then(function (success) {
-            $state.go('clientsList');
-        }, function (error) {
-            console.log('error: ', error);
-        })
-
-    }
-
-    $scope.isValid = function(field) {
-        return field != undefined && field != '';
-    }
-
-    $scope.sports = ProductService.sports;
-
-    }]);
-
-
-/**********************************************************/
-
-APP.controller('StatisticsController', ['$scope', '$stateParams', '$state', 'ColumnService', 'PurchaseService', 'EntranceService', 'ChartService',
-    function($scope, $stateParams, $state, ColumnService, PurchaseService, EntranceService, ChartService) {
-
-        $scope.purchaseCtx = $('#purchases');
-        $scope.purchasesChart = new Chart($scope.purchaseCtx, ChartService.default());
-
-        $scope.entrancesCtx = $('#entrances');
-        $scope.entrancesChart = new Chart($scope.entrancesCtx, ChartService.default());
-
-        PurchaseService.getAllMappedByProduct().then(function (successCallback) {
-            $scope.purchases = successCallback.data;
-
-            $scope.purchases.forEach(function (purchase) {
-                $scope.purchasesChart.data.labels.push(purchase.label)
-                $scope.purchasesChart.data.datasets[0].data.push(purchase.value);
-            });
-
-            $scope.purchasesChart.update();
-        });
-
-        EntranceService.getAllMappedByProduct().then(function (successCallback) {
-            $scope.entrances = successCallback.data;
-
-            $scope.entrances.forEach(function (entrance) {
-                $scope.entrancesChart.data.labels.push(entrance.label)
-                $scope.entrancesChart.data.datasets[0].data.push(entrance.value);
-            });
-
-            $scope.entrancesChart.update();
-        });
-
-    }]);
 
 /**********************************************************/
 
@@ -729,12 +338,8 @@ APP.service('CoursesService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     self.courses = self.getAll();
 
-    self.save = function (product) {
-        $http.post(path, product).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
+    self.save = function (course) {
+        return $http.post(path, course);
     };
 
     self.delete = function (product) {
@@ -978,12 +583,546 @@ APP.service('PurchaseService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
 /**********************************************************/
 
-angular.module("myApp.config", [])
-.constant("apiUrl", "http://localhost:8094/palestra-in-cloud")
+APP.service('UserService', ['$http', 'apiUrl', function ($http, apiUrl) {
+
+    var self = this;
+
+    const path = apiUrl + '/users';
+
+    self.save = function (client) {
+        return $http.post(path, client);
+    };
+
+    self.login = function(cf, pwd) {
+        return $http.get(apiUrl + '/login?cf=' + cf + '&password=' + pwd);
+    }
+
+    self.get = function (id) {
+        return $http.get(path + '/' + id);
+    };
+
+    self.getAll = function() {
+        return $http.get(path);
+    };
+
+    self.delete = function (client) {
+        $http.delete(path + '/' + client.id).then(function (success) {
+            console.log('deleted: ', client.id)
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+}]);
+
+
+/**********************************************************/
+
+APP.controller('AddAccountController', ['$scope', '$stateParams', '$state',
+    function($scope, $stateParams, $state, ) {
+
+    $scope.sports = [
+        {title: 'Boxe'},
+        {title: 'Kick Boxe'},
+        {title: 'Functional'},
+    ]
+
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientService', 'PurchaseService', 'ProductService', '$http', '$rootScope', 'EntranceService', 'apiUrl',
+    function($scope, $stateParams, $state, ClientService, PurchaseService, ProductService, $http, $rootScope, EntranceService, apiUrl) {
+
+        $scope.clientId = $stateParams.clientId;
+        $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
+        $scope.activeTab = 'weekly';
+        $scope.activeProductTab = 'sport';
+
+        ClientService.get($scope.clientId).then(function (success) {
+            $scope.client = success.data;
+
+            EntranceService.getAllByClientId($scope.client.id).then(function (success) {
+                $scope.entrances = EntranceService.getSplitted(success.data);
+
+                PurchaseService.getByClientId($scope.clientId).then(function(success) {
+                    $scope.purchasesCount = success.data.length;
+                    $scope.purchases = PurchaseService.getSplitted(success.data);
+                    $scope.lastSubscription = PurchaseService.getLastPurchase($scope.purchases['sport']);
+                });
+
+                ProductService.getAll().then(function (successCallback) {
+                    $scope.products = successCallback.data;
+                });
+            });
+            ClientService.setStatus($scope.client, $rootScope.date);
+            document.getElementById("img").src = "data:image/png;base64," + $scope.client.img;
+        });
+
+        ProductService.getAll().then(function (success) {
+            $scope.products = success.data;
+        });
+
+        $scope.addCertificate = function(client) {
+            client.certificateExpirationDate = $scope.certificateDate.setDate($scope.certificateDate.getDate() + 1);
+            ClientService.save(client).then(function (success) {
+                $state.reload();
+            });
+
+        };
+
+        $scope.addPurchase = function (purchase) {
+            purchase.client = $scope.client;
+            PurchaseService.save(purchase).then(function (successCallback) {
+                $state.reload();
+            })
+        };
+
+        $scope.addEntrance = function(client, sport) {
+            EntranceService.save({date: new Date(), client: client, sport: sport}).then(function (successCallback) {
+                $state.reload();
+            });
+        };
+
+        $scope.deleteEntrance = function(entrance) {
+            if (entrance.deleted) {
+                EntranceService.delete(entrance).then(function (successCallback) {
+                    $state.reload();
+                });
+            } else {
+                EntranceService.markAsDeleted(entrance).then(function (successCallback) {
+                    $state.reload();
+                });
+            }
+        };
+
+        $scope.isAlert = function(date) {
+            return ClientService.isAlert(new Date(date), $rootScope.date);
+        }
+
+        $scope.isExpired = function(date) {
+            return ClientService.isExpired(new Date(date), $rootScope.date);
+        }
+
+        $scope.uploadFile = function(files) {
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append("image", files[0]);
+
+            $http.post(apiUrl + '/clients' + '/image/' + $scope.clientId, fd, {
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(function (success) {
+                console.log(success);
+            }, function (error) {
+                console.log(error);
+            })
+
+        };
+
+        $scope.edit = function () {
+            console.log('update');
+        }
+
+        $scope.selectTab = function (tab) {
+            $scope.activeTab = tab;
+        }
+
+        $scope.isActiveTab = function (tab) {
+            return $scope.activeTab == tab;
+        }
+
+        $scope.selectProductTab = function (tab) {
+            $scope.activeProductTab = tab;
+        }
+
+        $scope.isActiveProductTab = function (tab) {
+            return $scope.activeProductTab == tab;
+        }
+
+        $scope.isEntrancesLimitReached = function (subscription) {
+            return subscription && subscription.product.maxEntrance <= $scope.entrances['weekly'].length;
+        }
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('ClientsListController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ClientService', 'ColumnService',
+    function($scope, $rootScope, $stateParams, $state, $http, ClientService, ColumnService) {
+
+        $scope.column = 'id';
+
+        ClientService.getAll().then(function (success) {
+            $scope.clients = success.data;
+            $scope.clients.forEach(function (client) {
+                ClientService.setStatus(client, $rootScope.date);
+            })
+        }, function (error) {
+            console.log('error: ', error);
+        });
+
+        $scope.updateClient = function (client) {
+            $scope.edit(client);
+            ClientService.save(client);
+        };
+
+        $scope.sortColumn = function (col) {
+            ColumnService.sortColumn($scope, col);
+        };
+
+        $scope.edit = function (client) {
+            client.isEditing = !client.isEditing;
+            $scope.isEditingDisabled = !$scope.isEditingDisabled;
+        };
+
+        $scope.addClient = function () {
+            UIkit.modal('#registration-modal').show();
+        }
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('CoursesController', ['$scope', '$stateParams', '$state', 'CoursesService', 'DownloadService', '$http', '$filter', 'apiUrl',
+    function ($scope, $stateParams, $state, CoursesService, DownloadService, $http, $filter, apiUrl) {
+
+        $scope.downloadTemplate = function() {
+            CoursesService.downloadTemplate().then(function(success){
+                var filename = "plan_template.xlsx";
+                DownloadService.downloadExcel(success.data, filename);
+            });
+
+        }
+
+        $scope.uploadFile = function(file) {
+            var url = apiUrl + "/courses/import";
+            $scope.uploadFileToUrl(file, url);
+        };
+
+        $scope.uploadFileToUrl = function(file, url) {
+            var fd = new FormData();
+            fd.append('file', file);
+            //fd.append('date', $scope.date);
+
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }).then(
+                function successCallback(response) {
+                    $scope.strategiesUpdated = [];
+
+                    response.data.forEach(function (strategy) {
+                        if (strategy.dateCreated !== strategy.lastUpdated) {
+                            $scope.strategiesUpdated.push(strategy);
+                        }
+                    });
+
+                    $scope.responseMsg =
+                        'Created: ' + (response.data.length - $scope.strategiesUpdated.length) + ' Exposures' +
+                        'Updated: ' + $scope.strategiesUpdated.length + ' Exposures';
+
+                    $scope.myFile = null;
+                },
+                function errorCallback(response) {
+                    $scope.myFile = null;
+                    $scope.errorMsg = response.data.message;
+                });
+        };
+
+        $scope.updateSearch = function () {
+            $scope.search = $filter('date')($scope.search, 'yyyy-MM-dd');
+
+            CoursesService.getAllByDate($scope.search).then(function (success) {
+                $scope.courses = success.data;
+            })
+
+        }
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('CoursesPrenotationController', ['$rootScope', '$scope', '$state', '$stateParams', 'CoursesService', '$filter', 'UserService',
+    function ($rootScope, $scope, $state, $stateParams, CoursesService, $filter, UserService) {
+
+        $scope.user = $stateParams.user;
+        console.log('$scope.user: ', $scope.user);
+        console.log('$stateParams: ', $stateParams);
+
+        $scope.today = new Date();
+
+        $scope.updateSearch = function () {
+            if ($scope.user) {
+                $scope.search = $filter('date')($scope.search, 'yyyy-MM-dd');
+
+                CoursesService.getAllByDate($scope.search).then(function (success) {
+                    $scope.courses = success.data;
+                })
+            }
+
+        }
+
+        $scope.search = $scope.today;
+        $scope.updateSearch();
+
+        $scope.prenotato = function(course) {
+            var prenotato = false;
+
+            course.users.forEach(function (user) {
+                if (user.cf == $scope.user.cf) {
+                    console.log('prenotato: ' + course.sport + ' ' + course.startTime + ' - ' + $scope.user.cf);
+                    prenotato = true;
+                }
+            })
+
+            return prenotato;
+        }
+
+        $scope.prenota = function (course) {
+            course.users.push($scope.user);
+            course.prenotation ++;
+
+            CoursesService.save(course).then(function (success) {
+                console.log(success);
+                $scope.updateSearch();
+            })
+        }
+
+        $scope.annullaPrenotazione = function (course) {
+            course.users.forEach(function (user, index) {
+                if (user.cf == $scope.user.cf) {
+                    course.users.splice(index, 1);
+                }
+            });
+
+            course.prenotation --;
+
+            CoursesService.save(course).then(function (success) {
+                console.log(success);
+                $scope.updateSearch();
+            })
+        }
+
+        $scope.courseDetails = function (course) {
+            $scope.selectedCourse = course;
+            console.log(course);
+        }
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state', 'UserService',
+    function($scope, $rootScope, $stateParams, $state, UserService) {
+
+        $scope.click = function (section) {
+            $scope.active = section;
+        }
+
+        $scope.isActive = function (section) {
+            return $scope.active == section;
+        }
+
+        $scope.openClientCard = function (id) {
+            $state.go('client', {id:id}, {reload: true})
+        }
+
+        $scope.registrati = function(cf, pwd) {
+            UserService.save({cf: cf, password: pwd, admin: false}).then(function (success) {
+                $rootScope.user = success.data;
+                $scope.user = $rootScope.user
+            }, function (error) {
+                alert(error.data.message);
+            })
+        }
+
+        $scope.accedi = function(cf, pwd) {
+            UserService.login(cf, pwd).then(function (success) {
+                $rootScope.user = success.data;
+                $scope.user = $rootScope.user;
+                $state.go('coursesPrenotation', {user: success.data});
+            }, function (error) {
+                alert(error.data.message);
+            })
+        }
+
+        $scope.esci = function() {
+            $rootScope.user = null;
+            $scope.user = null;
+            $state.go('home');
+        }
+
+        $rootScope.date = new Date();
+        $scope.date = $rootScope.date;
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('HomepageController', ['$scope', '$stateParams', '$state',
+    function($scope, $stateParams, $state, ) {
+
+        $scope.addAccount = function () {
+            $state.go('addAccount');
+        }
+
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('LoginController', ['$scope', '$stateParams', '$state',
+    function($scope, $stateParams, $state, ) {
+
+    console.log('Login Controller');
+
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('ProductsController', ['$scope', '$stateParams', '$state', '$http', 'ProductService', 'PurchaseService',
+    function ($scope, $stateParams, $state, $http, ProductService, PurchaseService) {
+
+        $scope.types = [
+            {value: 'sport', label: 'Abbonamento'},
+            {value: 'merchandise', label: 'Merchandise'}
+        ];
+
+        $scope.durations = [
+            {value: 1, label: 'Mensile', multiplier: 1},
+            {value: 6, label: 'Semestrale', multiplier: 5/6},
+            {value: 12, label: 'Annuale', multiplier: 9/12},
+        ];
+
+        ProductService.getAll().then(function (success) {
+            $scope.products = success.data;
+            $scope.products.forEach(function (product) {
+                PurchaseService.getByProductId(product.id).then(function (successCallback) {
+                    product.purchases = successCallback.data;
+                })
+            })
+        });
+
+        $scope.addProduct = function () {
+            UIkit.modal('#addEditProduct').show();
+        };
+
+        $scope.addProduct = function (product) {
+            console.log(product);
+            $scope.editProduct = {};
+            Object.assign($scope.editProduct, product);
+            UIkit.modal('#addEditProduct').show();
+        };
+
+        $scope.save = function (product) {
+            ProductService.save(product);
+            $state.reload();
+        };
+
+        $scope.delete = function (product) {
+            ProductService.delete(product);
+            $state.reload();
+        };
+
+        $scope.hasPurchases = function (product) {
+            return product && product.purchases && product.purchases.length > 0;
+        }
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('PurchasesController', ['$scope', '$rootScope', '$stateParams', '$state', '$http', 'ColumnService', 'PurchaseService',
+    function($scope, $rootScope, $stateParams, $state, $http, ColumnService, PurchaseService) {
+
+        $scope.column = 'date';
+
+        PurchaseService.getAll().then(function (successCallback) {
+            $scope.purchases = successCallback.data;
+        });
+
+        $scope.sortColumn = function (col) {
+            ColumnService.sortColumn($scope, col);
+        };
+
+    }]);
+
+/**********************************************************/
+
+APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$http', '$filter', 'ProductService', 'ClientService',
+    function($scope, $stateParams, $state, $http, $filter, ProductService, ClientService) {
+
+    $scope.save = function (client) {
+        client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
+        ClientService.save(client).then(function (success) {
+            $state.go('clientsList');
+        }, function (error) {
+            console.log('error: ', error);
+        })
+
+    }
+
+    $scope.isValid = function(field) {
+        return field != undefined && field != '';
+    }
+
+    $scope.sports = ProductService.sports;
+
+    }]);
+
+
+/**********************************************************/
+
+APP.controller('StatisticsController', ['$scope', '$stateParams', '$state', 'ColumnService', 'PurchaseService', 'EntranceService', 'ChartService',
+    function($scope, $stateParams, $state, ColumnService, PurchaseService, EntranceService, ChartService) {
+
+        $scope.purchaseCtx = $('#purchases');
+        $scope.purchasesChart = new Chart($scope.purchaseCtx, ChartService.default());
+
+        $scope.entrancesCtx = $('#entrances');
+        $scope.entrancesChart = new Chart($scope.entrancesCtx, ChartService.default());
+
+        PurchaseService.getAllMappedByProduct().then(function (successCallback) {
+            $scope.purchases = successCallback.data;
+
+            $scope.purchases.forEach(function (purchase) {
+                $scope.purchasesChart.data.labels.push(purchase.label)
+                $scope.purchasesChart.data.datasets[0].data.push(purchase.value);
+            });
+
+            $scope.purchasesChart.update();
+        });
+
+        EntranceService.getAllMappedByProduct().then(function (successCallback) {
+            $scope.entrances = successCallback.data;
+
+            $scope.entrances.forEach(function (entrance) {
+                $scope.entrancesChart.data.labels.push(entrance.label)
+                $scope.entrancesChart.data.datasets[0].data.push(entrance.value);
+            });
+
+            $scope.entrancesChart.update();
+        });
+
+    }]);
+
+/**********************************************************/
+
+angular.module("app.config", [])
+.constant("apiUrl", "http://localhost:5000/palestra-in-cloud")
 .constant("enableRouteDebug", false);
 
 
 /**********************************************************/
 
-angular.module("myApp.version", [])
+angular.module("app.version", [])
 .constant("version", "0.0.1");

@@ -1,4 +1,4 @@
-<nav class="uk-navbar" uk-navbar>
+<nav ng-show="user && user.admin" class="uk-navbar" uk-navbar>
     <div class="uk-navbar-left">
 
         <a class="uk-navbar-item uk-logo" ui-sref="home">Palestra in Cloud</a>
@@ -7,12 +7,61 @@
             <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Clienti </a></li>
             <li ng-class="{'uk-active': isActive('products')}" ng-click="click('products')"><a ui-sref="products"> Prodotti </a></li>
             <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
+            <li ng-class="{'uk-active': isActive('coursesPrenotation')}" ng-click="click('coursesPrenotation')"><a ui-sref="coursesPrenotation"> Prenotazione Corsi </a></li>
             <li ng-class="{'uk-active': isActive('purchases')}" ng-click="click('purchases')"><a ui-sref="purchases"> Contabilita </a></li>
             <li ng-class="{'uk-active': isActive('statistics')}" ng-click="click('statistics')"><a ui-sref="statistics"> Statistiche </a></li>
         </ul>
 
     </div>
 
+    <div class="uk-navbar-right">
+        <div class="uk-navbar-item">
+            <span>{{user.cf}}</span>
+        </div>
+        <div class="uk-navbar-item">
+            <form action="javascript:void(0)">
+                <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<nav ng-hide="user && user.admin" class="uk-navbar" uk-navbar>
+    <div class="uk-navbar-left">
+
+        <a class="uk-navbar-item uk-logo" ui-sref="home">Palestra in Cloud</a>
+
+        <ul ng-show="user" class="uk-navbar-nav">
+            <li ng-class="{'uk-active': isActive('coursesPrenotation')}" ng-click="click('coursesPrenotation')"><a ui-sref="coursesPrenotation"> Prenotazione Corsi </a></li>
+        </ul>
+
+    </div>
+
+    <div ng-show="!user" class="uk-navbar-right">
+        <div class="uk-navbar-item">
+            <form name="myForm" action="javascript:void(0)" novalidate>
+                <input ng-model="cf" name="cf" type="text" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.cf.$touched && !myForm.cf.$valid}" placeholder="Codice Fiscale" minlength="16" maxlength="16" required>
+                <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" placeholder="Password" minlength="6" required>
+                <button type="submit" class="uk-button uk-button-secondary" ng-click="registrati(cf, password)" ng-disabled="!myForm.$valid">Registrati</button>
+                <button type="submit" class="uk-button uk-button-secondary" ng-click="accedi(cf, password)" ng-disabled="!myForm.$valid">Accedi</button>
+            </form>
+        </div>
+    </div>
+
+    <div ng-show="user" class="uk-navbar-right">
+        <div class="uk-navbar-item">
+            <span>{{user.cf}}</span>
+        </div>
+        <div class="uk-navbar-item">
+            <form action="javascript:void(0)">
+                <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<hr>
+
+<nav ng-show="user && user.admin" class="uk-navbar" uk-navbar>
     <div class="uk-navbar-right">
         <div class="uk-navbar-item">
             <form action="javascript:void(0)">
@@ -22,4 +71,3 @@
         </div>
     </div>
 </nav>
-<hr>

@@ -16,12 +16,8 @@ APP.service('CoursesService', ['$http', 'apiUrl', function ($http, apiUrl) {
 
     self.courses = self.getAll();
 
-    self.save = function (product) {
-        $http.post(path, product).then(function (success) {
-            self.getAll();
-        }, function (error) {
-            console.log(error);
-        });
+    self.save = function (course) {
+        return $http.post(path, course);
     };
 
     self.delete = function (product) {
