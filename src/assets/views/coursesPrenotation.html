@@ -29,13 +29,13 @@
         <tbody>
         <tr ng-repeat="course in courses | orderBy: 'course.startTime'" ng-click="courseDetails(course)" href="#course-details" uk-toggle>
             <td>
-                <span> {{course.date}} </span>
+                <span> {{course.date | date: 'dd-MM-yyyy'}} </span>
             </td>
             <td>
-                <span> {{course.startTime | date: 'hh:mm'}} </span>
+                <span> {{course.startTime | date: 'HH:mm'}} PM</span>
             </td>
             <td>
-                <span> {{course.finishTime | date: 'hh:mm'}} </span>
+                <span> {{course.finishTime | date: 'HH:mm'}} </span>
             </td>
             <td>
                 <span> {{course.sport}} </span>
@@ -64,7 +64,7 @@
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title">{{selectedCourse.sport}}  {{selectedCourse.startTime | date: 'hh:mm'}}</h2>
         <ul>
-            <li ng-repeat="user in selectedCourse.users">{{user.cf}}</li>
+            <li ng-repeat="client in selectedCourse.clients">{{client.name}} {{client.surname}}, <span ng-show="user.admin">{{client.phone}}</span></li>
         </ul>
         <p class="uk-text-right">
             <button class="uk-button uk-button-default uk-modal-close" type="button">Ok</button>

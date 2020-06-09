@@ -1,5 +1,5 @@
-APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state', 'UserService',
-    function($scope, $rootScope, $stateParams, $state, UserService) {
+APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$state', 'ClientService',
+    function($scope, $rootScope, $stateParams, $state, ClientService) {
 
         $scope.click = function (section) {
             $scope.active = section;
@@ -13,17 +13,12 @@ APP.controller('HeaderController', ['$scope', '$rootScope', '$stateParams', '$st
             $state.go('client', {id:id}, {reload: true})
         }
 
-        $scope.registrati = function(cf, pwd) {
-            UserService.save({cf: cf, password: pwd, admin: false}).then(function (success) {
-                $rootScope.user = success.data;
-                $scope.user = $rootScope.user
-            }, function (error) {
-                alert(error.data.message);
-            })
+        $scope.addClient = function () {
+            UIkit.modal('#registration-modal').show();
         }
 
-        $scope.accedi = function(cf, pwd) {
-            UserService.login(cf, pwd).then(function (success) {
+        $scope.accedi = function(email, pwd) {
+            ClientService.login(email, pwd).then(function (success) {
                 $rootScope.user = success.data;
                 $scope.user = $rootScope.user;
                 $state.go('coursesPrenotation', {user: success.data});

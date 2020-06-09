@@ -1,5 +1,5 @@
-APP.controller('CoursesPrenotationController', ['$rootScope', '$scope', '$state', '$stateParams', 'CoursesService', '$filter', 'UserService',
-    function ($rootScope, $scope, $state, $stateParams, CoursesService, $filter, UserService) {
+APP.controller('CoursesPrenotationController', ['$rootScope', '$scope', '$state', '$stateParams', 'CoursesService', '$filter',
+    function ($rootScope, $scope, $state, $stateParams, CoursesService, $filter) {
 
         $scope.user = $stateParams.user;
         console.log('$scope.user: ', $scope.user);
@@ -24,9 +24,9 @@ APP.controller('CoursesPrenotationController', ['$rootScope', '$scope', '$state'
         $scope.prenotato = function(course) {
             var prenotato = false;
 
-            course.users.forEach(function (user) {
-                if (user.cf == $scope.user.cf) {
-                    console.log('prenotato: ' + course.sport + ' ' + course.startTime + ' - ' + $scope.user.cf);
+            course.clients.forEach(function (user) {
+                if (user.email == $scope.user.email) {
+                    console.log('prenotato: ' + course.sport + ' ' + course.startTime + ' - ' + $scope.user.email);
                     prenotato = true;
                 }
             })
@@ -35,19 +35,23 @@ APP.controller('CoursesPrenotationController', ['$rootScope', '$scope', '$state'
         }
 
         $scope.prenota = function (course) {
-            course.users.push($scope.user);
-            course.prenotation ++;
+            if ($scope.user) {
+                course.clients.push($scope.user);
+                course.prenotation ++;
 
-            CoursesService.save(course).then(function (success) {
-                console.log(success);
-                $scope.updateSearch();
-            })
+                CoursesService.save(course).then(function (success) {
+                    console.log(success);
+                    $scope.updateSearch();
+                })
+            } else {
+                alert('Effettuare il login per poter prenotare.')
+            }
         }
 
         $scope.annullaPrenotazione = function (course) {
-            course.users.forEach(function (user, index) {
-                if (user.cf == $scope.user.cf) {
-                    course.users.splice(index, 1);
+            course.clients.forEach(function (user, index) {
+                if (user.email == $scope.user.email) {
+                    course.clients.splice(index, 1);
                 }
             });
 

@@ -3,10 +3,14 @@ APP.controller('RegistrationController', ['$scope', '$stateParams','$state', '$h
 
     $scope.save = function (client) {
         client.dateOfBirth = $filter('date')(client.dateOfBirth, 'yyyy-MM-dd');
-        ClientService.save(client).then(function (success) {
-            $state.go('clientsList');
+        ClientService.registration(client).then(function (success) {
+            $state.go('coursesPrenotation');
         }, function (error) {
-            console.log('error: ', error);
+            if (error.data.errors) {
+                alert(error.data.errors[0].defaultMessage);
+            } else {
+                alert(error.data.message);
+            }
         })
 
     }

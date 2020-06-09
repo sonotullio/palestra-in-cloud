@@ -14,16 +14,24 @@ APP.service('ClientService', ['$http', 'apiUrl', function ($http, apiUrl) {
         return (utc1 - utc2) / _MS_PER_DAY;
     }
 
-    self.getAll = function() {
-        return $http.get(path);
-    };
-
     self.save = function (client) {
         return $http.post(path, client);
     };
 
+    self.registration = function (client) {
+        return $http.post(path + '/registration', client);
+    };
+
+    self.login = function(email, pwd) {
+        return $http.get(path + '/login?email=' + email + '&password=' + pwd);
+    }
+
     self.get = function (id) {
         return $http.get(path + '/' + id);
+    };
+
+    self.getAll = function() {
+        return $http.get(path);
     };
 
     self.delete = function (client) {
