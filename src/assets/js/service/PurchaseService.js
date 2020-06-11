@@ -28,6 +28,10 @@ APP.service('PurchaseService', ['$http', 'apiUrl', function ($http, apiUrl) {
         return $http.get(path);
     };
 
+    self.getAllBetween = function (from, to) {
+        return $http.get(path + '?from=' + from + '&to=' + to);
+    };
+
     self.getSplitted = function(purchases) {
         var retval = {
             "sport": [], "merchandise": [], "other": [],

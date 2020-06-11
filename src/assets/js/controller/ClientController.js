@@ -5,6 +5,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
         $scope.maxEntranceMsg = 'Limite di ingressi settimanali raggiunto.';
         $scope.activeTab = 'weekly';
         $scope.activeProductTab = 'sport';
+        $scope.today = new Date();
 
         ClientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
@@ -45,6 +46,14 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
             })
         };
 
+        $scope.openEntrance = function(client) {
+            if ($scope.puoEntrare(client.lastSubscription, client.expirationDate)) {
+                UIkit.modal('#ingresso').show();
+            } else {
+                alert('Il cliente non è abilitato ad entrare. Limite di ingressi raggiunto o abbonamento scaduto!')
+            }
+        }
+
         $scope.addEntrance = function(client, sport) {
             EntranceService.save({date: new Date(), client: client, sport: sport}).then(function (successCallback) {
                 $state.reload();
@@ -68,7 +77,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
         }
 
         $scope.isExpired = function(date) {
-            return ClientService.isExpired(new Date(date), $rootScope.date);
+            return ClientService.isExpired(new Date(date), $scope.today);
         }
 
         $scope.uploadFile = function(files) {
@@ -88,7 +97,11 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
         };
 
         $scope.edit = function () {
-            console.log('update');
+            UIkit.modal('#client-registration').show();
+        }
+
+        $scope.delete = function () {
+            UIkit.modal('#client-delete').show();
         }
 
         $scope.selectTab = function (tab) {
@@ -109,6 +122,10 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
 
         $scope.isEntrancesLimitReached = function (subscription) {
             return subscription && subscription.product.maxEntrance <= $scope.entrances['weekly'].length;
+        }
+
+        $scope.puoEntrare = function(subscription, expirationDate) {
+            return !$scope.isEntrancesLimitReached(subscription) && !$scope.isExpired(expirationDate);
         }
 
     }]);

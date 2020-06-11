@@ -1,0 +1,15 @@
+<div id="course-details" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">{{selectedCourse.sport}}  {{selectedCourse.startTime | date: 'hh:mm'}}</h2>
+
+        <ul>
+            <li ng-repeat="client in selectedCourse.clients">{{client.name}} {{client.surname}} <span ng-show="user.admin">, {{client.phone}}</span></li>
+        </ul>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">
+                <span uk-icon="close"></span>
+            </button>
+        </p>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-<div class="uk-section uk-padding">
+<div>
 
     <nav class="uk-navbar-container uk-padding-small" uk-navbar>
         <div class="uk-navbar-left">
@@ -12,23 +12,18 @@
         <div class="uk-navbar-right">
             <div class="uk-navbar-item">
                 <label> Da: </label>
-                <input class="uk-input" type="date"/>
+                <input ng-model="from" class="uk-input" type="date"/>
             </div>
             <div class="uk-navbar-item">
                 <label> A: </label>
-                <input class="uk-input" type="date"/>
+                <input ng-model="to" class="uk-input" type="date"/>
             </div>
-            <div class="uk-navbar-item">
-                <select class="uk-select">
-                    <option>Questo mese</option>
-                    <option>Mese scorso</option>
-                    <option>Da inizio anno</option>
-                    <option>Anno scorso</option>
-                    <option>Da sempre</option>
-                </select>
-            </div>
+            <button ng-click="find(from, to)" type="submit" class="uk-button uk-button-primary uk-margin-small-right"><a href="" uk-icon="icon: search"></a></button>
             <input ng-model="search" type="text" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Cerca">
-            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right"><a href="" uk-icon="icon: download"></a></button>
+            <button type="submit" class="uk-button uk-button-secondary uk-margin-small-right"><a href="" uk-icon="icon: download"></a></button>
+            <strong> Totale: </strong>
+            <span ng-if="purchases" class="uk-badge uk-margin-small-right">{{total | number: 2}}</span>
+            <span ng-if="!purchases" class="uk-badge uk-margin-small-right">0</span>
         </div>
     </nav>
 
@@ -37,14 +32,18 @@
         <tr>
             <th ng-click="sortColumn('date')">Data</th>
             <th ng-click="sortColumn('client.surname')">Cliente</th>
+            <th ng-click="sortColumn('product.type')">Tipologia</th>
+            <th ng-click="sortColumn('product.name')">Nome</th>
             <th ng-click="sortColumn('product.description')">Descrizione</th>
             <th ng-click="sortColumn('price')">Importo</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="cashflow in purchases | orderBy: column:reverse" ng-class="{'info': cashflow.description == 'Totale'}">
+        <tr ng-repeat="cashflow in purchases | orderBy: column:reverse | filter: search" ng-class="{'info': cashflow.description == 'Totale'}">
             <td>{{cashflow.date | date: 'yyyy-MM-dd'}}</td>
             <td> {{cashflow.client.name}} {{cashflow.client.surname}} </td>
+            <td>{{cashflow.product.type}}</td>
+            <td>{{cashflow.product.name}}</td>
             <td>{{cashflow.product.description}}</td>
             <td>{{cashflow.product.price | number: 2}}</td>
         </tr>

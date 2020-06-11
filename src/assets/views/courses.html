@@ -11,21 +11,16 @@
         <div class="uk-navbar-right">
             <input ng-model="search" ng-change="updateSearch()" type="date" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Filtra...">
 
-            <button ng-click="downloadTemplate()" type="submit" class="uk-button uk-button-default uk-margin-small-right">
+            <button ng-show="user.admin" ng-click="downloadTemplate()" type="submit" class="uk-button uk-button-secondary uk-margin-small-right">
                 <span uk-icon="icon: cloud-download">
                 </span>
             </button>
 
-            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right" style="position: relative">
+            <button ng-show="user.admin" type="submit" class="uk-button uk-button-primary uk-margin-small-right" style="position: relative">
                 <span uk-icon="icon: plus">
                     <input type="file" name="file" fileread="myFile" style="opacity: 0; width: 100%; height: 100%; position: absolute;  right: 0;  top: 0;" />
                 </span>
             </button>
-
-            <button ng-show="myFile != undefined && myFile != null" ng-click="uploadFile(myFile)" class="uk-button uk-button-secondary uk-margin-small-right">
-                Importa Corsi
-            </button>
-
         </div>
     </nav>
 
@@ -39,31 +34,41 @@
             <th>Sport</th>
             <th>Prenotazioni</th>
             <th>Limite Ingressi</th>
+            <th>Azioni</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="course in courses | orderBy: 'slot'">
+        <tr ng-repeat="course in courses | orderBy: 'course.startTime'" ng-click="courseDetails(course)">
             <td>
-                <span> {{course.date}} </span>
+                <span> {{course.date | date: 'dd-MM-yyyy'}} </span>
             </td>
             <td>
-                <span> {{course.startTime | date: 'hh:mm'}} </span>
+                <span> {{course.startTime | date: 'HH:mm'}} PM</span>
             </td>
             <td>
-                <span> {{course.finishTime | date: 'hh:mm'}} </span>
+                <span> {{course.finishTime | date: 'HH:mm'}} </span>
             </td>
             <td>
                 <span> {{course.sport}} </span>
             </td>
             <td>
-                <span> {{course.prenotation}} </span>
+                <span> {{course.clients.length}} </span>
             </td>
             <td>
                 <span> {{course.prenotationMax}} </span>
+            </td>
+            <td>
+                <button ng-hide="prenotato(course) || course.clients.length >= course.prenotationMax" ng-click="prenota(course)" class="uk-button uk-button-small uk-button-primary">
+                    Prenota
+                </button>
+                <button ng-show="prenotato(course)" ng-click="annullaPrenotazione(course)" class="uk-button uk-button-small uk-button-danger">
+                    Annulla
+                </button>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
 
-<div ng-include="'modals/productaddedit.html'"></div>
+<!-- Details Modal -->
+<div ng-include="'modals/courses-details.html'"></div>

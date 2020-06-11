@@ -20,6 +20,10 @@ APP.service('CoursesService', ['$http', 'apiUrl', function ($http, apiUrl) {
         return $http.post(path, course);
     };
 
+    self.update = function (course) {
+        return $http.put(path + '/' + course.id, course);
+    };
+
     self.delete = function (product) {
         $http.delete(path + '/' + product.id).then(function (success) {
             self.getAll();

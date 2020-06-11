@@ -21,13 +21,6 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         templateUrl: 'addAccount.html'
     }
 
-    var registration = {
-        name: 'registration',
-        url: '/registration',
-        controller: 'RegistrationController',
-        templateUrl: 'registration.html',
-    }
-
     var clientsList = {
         name: 'clientsList',
         url: '/clients',
@@ -44,6 +37,26 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             clientId: ['$stateParams', function ($stateParams) {
                 return $stateParams.clientId;
             }]
+        },
+    }
+
+    var registration = {
+        name: 'client.registration',
+        url: '/registration',
+        controller: 'ClientRegistrationController',
+        templateUrl: 'modals/client-registration.html',
+        params: {
+            client: { squash: true, value: null },
+        },
+    }
+
+    var clientDelete = {
+        name: 'client.delete',
+        url: '/delete',
+        controller: 'ClientDeleteController',
+        templateUrl: 'modals/client-delete.html',
+        params: {
+            client: { squash: true, value: null },
         },
     }
 
@@ -73,16 +86,6 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'CoursesController',
     }
 
-    var coursesPrenotation = {
-        name: 'coursesPrenotation',
-        url: '/coursesPrenotation',
-        templateUrl: 'coursesPrenotation.html',
-        controller: 'CoursesPrenotationController',
-        params: {
-            user: { squash: true, value: null },
-        },
-    }
-
     var purchases = {
         name: 'purchases',
         url: '/purchases',
@@ -102,14 +105,14 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(addAccount);
     $stateProvider.state(registration);
     $stateProvider.state(client);
+    $stateProvider.state(clientDelete);
     $stateProvider.state(clientsList);
     $stateProvider.state(product);
     $stateProvider.state(products);
     $stateProvider.state(courses);
-    $stateProvider.state(coursesPrenotation);
     $stateProvider.state(purchases);
     $stateProvider.state(statistics);
 
-    $urlRouterProvider.otherwise('/home');
+    $urlRouterProvider.otherwise('/courses');
 
 }]);

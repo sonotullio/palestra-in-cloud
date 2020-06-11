@@ -1,75 +1,173 @@
-<nav ng-show="user && user.admin" class="uk-navbar" uk-navbar>
-    <div class="uk-navbar-left">
+<div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
 
-        <a class="uk-navbar-item uk-logo" ui-sref="home">Palestra in Cloud</a>
+    <!-- Admin Desktop Navbar -->
+    <nav ng-show="user && user.admin" class="uk-visible@m uk-navbar uk-text-italic navbar-background" uk-navbar>
+        <div class="uk-navbar-left">
 
-        <ul class="uk-navbar-nav">
-            <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Clienti </a></li>
-            <li ng-class="{'uk-active': isActive('products')}" ng-click="click('products')"><a ui-sref="products"> Prodotti </a></li>
-            <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
-            <li ng-class="{'uk-active': isActive('coursesPrenotation')}" ng-click="click('coursesPrenotation')"><a ui-sref="coursesPrenotation"> Prenotazione Corsi </a></li>
-            <li ng-class="{'uk-active': isActive('purchases')}" ng-click="click('purchases')"><a ui-sref="purchases"> Contabilita </a></li>
-            <li ng-class="{'uk-active': isActive('statistics')}" ng-click="click('statistics')"><a ui-sref="statistics"> Statistiche </a></li>
-        </ul>
+            <a class="uk-navbar-item uk-logo" ui-sref="home">
+                <img class="uk-icon-image" src="assets/img/favicon-cloud.ico" uk-img> <span> &nbsp; Palestra in Cloud</span>
+            </a>
 
+            <ul class="uk-navbar-nav">
+                <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Clienti </a></li>
+                <li ng-class="{'uk-active': isActive('products')}" ng-click="click('products')"><a ui-sref="products"> Prodotti </a></li>
+                <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
+                <li ng-class="{'uk-active': isActive('purchases')}" ng-click="click('purchases')"><a ui-sref="purchases"> Contabilita </a></li>
+                <li ng-class="{'uk-active': isActive('statistics')}" ng-click="click('statistics')"><a ui-sref="statistics"> Statistiche </a></li>
+            </ul>
+
+        </div>
+
+        <div class="uk-navbar-right">
+            <div class="uk-navbar-item">
+                <form action="javascript:void(0)">
+                    <input ng-model="search" type="text" class="uk-input uk-form-width-small" style="color: black !important;" placeholder="Id Cliente">
+                    <button type="submit" class="uk-button uk-button-secondary" ui-sref="client({clientId: search})">Apri Scheda</button>
+                </form>
+            </div>
+            <div class="uk-navbar-item">
+                <span>{{user.name}}</span>
+            </div>
+            <div class="uk-navbar-item">
+                <form action="javascript:void(0)">
+                    <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Mobile Navbar -->
+    <div ng-show="user && user.admin" class="uk-hidden@m">
+        <nav class="uk-navbar uk-text-italic navbar-background" uk-navbar>
+            <ul class="uk-navbar-nav">
+                <li ng-class="{'uk-active': isActive('clientsList')}" ng-click="click('clientsList')"><a ui-sref="clientsList"> Clienti </a></li>
+                <li ng-class="{'uk-active': isActive('products')}" ng-click="click('products')"><a ui-sref="products"> Prodotti </a></li>
+                <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
+                <li ng-class="{'uk-active': isActive('purchases')}" ng-click="click('purchases')"><a ui-sref="purchases"> Contabilita </a></li>
+                <li ng-class="{'uk-active': isActive('statistics')}" ng-click="click('statistics')"><a ui-sref="statistics"> Statistiche </a></li>
+            </ul>
+        </nav>
+
+        <nav class="uk-navbar uk-text-italic navbar-background" uk-navbar>
+            <div class="uk-margin">
+                <form action="javascript:void(0)" class="uk-margin-left">
+                    <input ng-model="search" type="text" class="uk-input uk-form-small uk-form-width-small" style="color: black !important;" placeholder="Id Cliente">
+                    <button type="submit" class="uk-button uk-button-small uk-button-secondary" ui-sref="client({clientId: search})">Dettaglio</button>
+                    <span>{{user.name}}</span>
+                    <button type="submit" class="uk-button uk-button-small uk-button-secondary" ng-click="esci()">Esci</button>
+                </form>
+            </div>
+        </nav>
     </div>
 
-    <div class="uk-navbar-right">
-        <div class="uk-navbar-item">
-            <span>{{user.name}}</span>
+    <!-- Clients Desktop Navbar -->
+    <nav ng-hide="user && user.admin" class="uk-visible@m uk-navbar uk-text-italic navbar-background" uk-navbar>
+
+        <!-- Left -->
+        <div class="uk-navbar-left">
+
+            <!-- Logo -->
+            <div class="uk-text-center uk-visible@m">
+                <a class="uk-navbar-item uk-logo" ui-sref="home">
+                    <img class="uk-icon-image" src="assets/img/favicon-cloud.ico" uk-img>
+                    <p> &nbsp; Palestra in Cloud</p>
+                </a>
+            </div>
+
+            <!-- Corsi -->
+            <ul ng-show="user" class="uk-navbar-nav">
+                <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
+            </ul>
+
         </div>
-        <div class="uk-navbar-item">
-            <form action="javascript:void(0)">
-                <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
-            </form>
+
+        <div ng-show="!user" class="uk-navbar-item uk-hidden@m">
+            <div class="uk-grid uk-width-1-1@s">
+                <form name="myForm" action="javascript:void(0)" novalidate>
+                    <div class="uk-margin">
+                        <input ng-model="email" name="email" type="email" class="uk-input uk-form-width-small uk-form-small"  ng-class="{'uk-form-danger': myForm.email.$touched && !myForm.email.$valid}" style="color: black !important;" placeholder="E-mail">
+                    </div>
+                    <div class="uk-margin">
+                        <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small uk-form-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" style="color: black !important;" placeholder="Password">
+                    </div>
+                    <div class="uk-margin">
+                        <button type="submit" class="uk-button uk-button-small uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
+                    </div>
+                    <div class="uk-margin">
+                        <button type="submit" class="uk-button uk-button-small uk-button-secondary" ng-click="addClient()">Registrati</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-</nav>
 
-<nav ng-hide="user && user.admin" class="uk-navbar" uk-navbar>
-    <div class="uk-navbar-left">
-
-        <a class="uk-navbar-item uk-logo" ui-sref="home">Palestra in Cloud</a>
-
-        <ul ng-show="user" class="uk-navbar-nav">
-            <li ng-class="{'uk-active': isActive('coursesPrenotation')}" ng-click="click('coursesPrenotation')"><a ui-sref="coursesPrenotation"> Prenotazione Corsi </a></li>
-        </ul>
-
-    </div>
-
-    <div ng-show="!user" class="uk-navbar-right">
-        <div class="uk-navbar-item">
-            <form name="myForm" action="javascript:void(0)" novalidate>
-                <input ng-model="email" name="email" type="email" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.email.$touched && !myForm.email.$valid}" placeholder="E-mail" required>
-                <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" placeholder="Password" required>
-                <button type="submit" class="uk-button uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
-                <button type="submit" class="uk-button uk-button-secondary" ng-click="addClient()">Registrati</button>
-            </form>
+        <div ng-show="!user" class="uk-navbar-right uk-visible@m">
+            <div class="uk-navbar-item">
+                <form name="myForm" action="javascript:void(0)" novalidate>
+                    <input ng-model="email" name="email" type="email" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.email.$touched && !myForm.email.$valid}" style="color: black !important;" placeholder="E-mail" required>
+                    <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" style="color: black !important;" placeholder="Password" required>
+                    <button type="submit" class="uk-button uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
+                    <button type="submit" class="uk-button uk-button-secondary" ng-click="addClient()">Registrati</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <div ng-show="user" class="uk-navbar-right">
-        <div class="uk-navbar-item">
-            <span>{{user.name}}</span>
+        <div ng-show="user" class="uk-navbar-right">
+            <div class="uk-navbar-item">
+                <span>{{user.name}}</span>
+            </div>
+            <div class="uk-navbar-item">
+                <form action="javascript:void(0)">
+                    <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
+                </form>
+            </div>
         </div>
-        <div class="uk-navbar-item">
-            <form action="javascript:void(0)">
-                <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
-            </form>
-        </div>
-    </div>
-</nav>
-<hr>
+    </nav>
 
-<nav ng-show="user && user.admin" class="uk-navbar" uk-navbar>
-    <div class="uk-navbar-right">
-        <div class="uk-navbar-item">
-            <form action="javascript:void(0)">
-                <input ng-model="search" type="text" class="uk-input uk-form-width-small" placeholder="Id Cliente">
-                <button type="submit" class="uk-button uk-button-secondary" ui-sref="client({clientId: search})">Apri Scheda</button>
-            </form>
-        </div>
-    </div>
-</nav>
+    <!-- Clients Mobile Navbar -->
+    <nav ng-hide="user && user.admin" class="uk-hidden@m uk-navbar uk-text-italic navbar-background" uk-navbar>
 
-<div ng-include="'modals/registration.html'" ng-controller="RegistrationController"></div>
+        <!-- Left -->
+        <div class="uk-navbar-left">
+
+            <!-- Corsi -->
+            <ul ng-show="user" class="uk-navbar-nav">
+                <li ng-class="{'uk-active': isActive('courses')}" ng-click="click('courses')"><a ui-sref="courses"> Corsi </a></li>
+            </ul>
+
+        </div>
+
+        <div ng-show="!user" class="uk-align-center uk-hidden@m">
+            <div class="uk-grid uk-width-1-1@s">
+                <form name="myForm" action="javascript:void(0)" novalidate>
+                    <div class="uk-margin">
+                        <input ng-model="email" name="email" type="email" class="uk-input uk-form-width-small uk-form-small"  ng-class="{'uk-form-danger': myForm.email.$touched && !myForm.email.$valid}" style="color: black !important;" placeholder="E-mail">
+                    </div>
+                    <div class="uk-margin">
+                        <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small uk-form-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" style="color: black !important;" placeholder="Password">
+                    </div>
+                    <div class="uk-margin">
+                        <button type="submit" class="uk-button uk-button-small uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
+                    </div>
+                    <div class="uk-margin">
+                        <button type="submit" class="uk-button uk-button-small uk-button-secondary" ng-click="addClient()">Registrati</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div ng-show="user" class="uk-navbar-right">
+            <div class="uk-navbar-item">
+                <span>{{user.name}}</span>
+            </div>
+            <div class="uk-navbar-item">
+                <form action="javascript:void(0)">
+                    <button type="submit" class="uk-button uk-button-secondary" ng-click="esci()">Esci</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <hr style="margin: 0">
+</div>
+
+<div ng-include="'modals/client-registration.html'" ng-controller="ClientRegistrationController"></div>

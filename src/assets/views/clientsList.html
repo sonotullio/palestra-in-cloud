@@ -7,9 +7,15 @@
 
         </div>
         <div class="uk-navbar-right">
-            <input ng-model="search" type="text" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Filtra...">
-            <button type="submit" class="uk-button uk-button-secondary uk-margin-small-right" ng-click="addClient()"><span uk-icon="icon: plus"></span></button>
-            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right">Esporta</button>
+            <input ng-model="search" type="text" class="uk-input uk-form-width-small uk-margin-small-right" placeholder="Cerca...">
+
+            <button type="submit" class="uk-button uk-button-primary uk-margin-small-right" ng-click="addClient()">
+                <span uk-icon="icon: plus"></span>
+            </button>
+
+            <button type="submit" class="uk-button uk-button-secondary uk-margin-small-right">
+                <span uk-icon="icon: cloud-download"></span>
+            </button>
         </div>
     </nav>
 
@@ -18,48 +24,36 @@
             <thead>
             <tr>
                 <th ng-click="sortColumn('id')">id</th>
-                <th ng-click="sortColumn('nome')">nome</th>
-                <th ng-click="sortColumn('cognome')">cognome</th>
+                <th ng-click="sortColumn('name')">nome</th>
+                <th ng-click="sortColumn('surname')">cognome</th>
                 <th ng-click="sortColumn('email')">email</th>
                 <th ng-click="sortColumn('phone')">cellulare</th>
                 <th ng-click="sortColumn('dateOfBirth')">data di nascita</th>
                 <th>Note</th>
-                <th>Azioni</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'warning': client.isAlert, 'danger' : client.isExpired}">
+            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse">
                 <td ui-sref="client({clientId: client.id})">
                     <a class="uk-link-heading"> {{client.id}} </a>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.name}}</span>
-                    <input ng-model="client.name" ng-show="client.isEditing" class="uk-input" required/>
+                    <span >{{client.name}}</span>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.surname}}</span>
-                    <input ng-model="client.surname" ng-show="client.isEditing" class="uk-input" required/>
+                    <span >{{client.surname}}</span>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.email}}</span>
-                    <input ng-model="client.email" ng-show="client.isEditing" class="uk-input"/>
+                    <span >{{client.email}}</span>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.phone}}</span>
-                    <input ng-model="client.phone" ng-show="client.isEditing" class="uk-input"/>
+                    <span >{{client.phone}}</span>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.dateOfBirth}}</span>
-                    <input ng-model="client.dateOfBirth" ng-show="client.isEditing" class="uk-input" required/>
+                    <span >{{client.dateOfBirth}}</span>
                 </td>
                 <td>
-                    <span ng-show="!client.isEditing">{{client.note}}</span>
-                    <input ng-model="client.note" ng-show="client.isEditing" class="uk-input"/>
-                </td>
-                <td>
-                    <button ng-show="!client.isEditing" ng-click="client.isEditing = true" class="uk-button uk-button-small uk-button-primary"><span uk-icon="pencil"></span></button>
-                    <button ng-show="client.isEditing" ng-click="save(client)" class="uk-button uk-button-small uk-button-secondary"><span uk-icon="check"></span></button>
-                    <button ng-show="client.isEditing" ng-click="client.isEditing = false" class="uk-button uk-button-small uk-button-danger"><span uk-icon="close"></span></button>
+                    <span >{{client.note}}</span>
                 </td>
             </tr>
             </tbody>
@@ -67,4 +61,4 @@
     </form>
 </div>
 
-<div ng-include="'modals/registration.html'" ng-controller="RegistrationController"></div>
+<div ng-include="'modals/client-registration.html'" ng-controller="ClientRegistrationController"></div>
