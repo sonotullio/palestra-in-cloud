@@ -5,6 +5,10 @@ APP.controller('CoursesController', ['$rootScope', '$scope', '$state', '$statePa
         $scope.today = new Date();
         $scope.search = $scope.today;
 
+        if (!$scope.user) {
+            $state.go('home');
+        }
+
         $scope.updateSearch = function () {
             if ($scope.user) {
                 $scope.search = $filter('date')($scope.search, 'yyyy-MM-dd');

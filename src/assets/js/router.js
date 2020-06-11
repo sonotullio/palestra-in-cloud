@@ -113,6 +113,6 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(purchases);
     $stateProvider.state(statistics);
 
-    $urlRouterProvider.otherwise('/courses');
+    $urlRouterProvider.otherwise('/home');
 
 }]);
