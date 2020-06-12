@@ -35,11 +35,7 @@ APP.service('ClientService', ['$http', 'apiUrl', function ($http, apiUrl) {
     };
 
     self.delete = function (client) {
-        $http.delete(path + '/' + client.id).then(function (success) {
-            console.log('deleted: ', client.id)
-        }, function (error) {
-            console.log(error);
-        });
+        return $http.delete(path + '/' + client.id);
     }
 
     self.setStatus = function (client, date) {

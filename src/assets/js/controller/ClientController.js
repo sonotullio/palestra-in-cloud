@@ -31,18 +31,12 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
             $scope.products = success.data;
         });
 
-        $scope.addCertificate = function(client) {
-            client.certificateExpirationDate = $scope.certificateDate.setDate($scope.certificateDate.getDate() + 1);
-            ClientService.save(client).then(function (success) {
-                $state.reload();
-            });
-
-        };
-
         $scope.addPurchase = function (purchase) {
             purchase.client = $scope.client;
             PurchaseService.save(purchase).then(function (successCallback) {
                 $state.reload();
+            }, function (error) {
+                alert(error.data.message);
             })
         };
 

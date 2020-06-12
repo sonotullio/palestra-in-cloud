@@ -58,10 +58,10 @@
                 <span> {{course.prenotationMax}} </span>
             </td>
             <td>
-                <button ng-hide="prenotato(course) || course.clients.length >= course.prenotationMax" ng-click="prenota(course)" class="uk-button uk-button-small uk-button-primary">
+                <button ng-hide="alreadyReserved(course) || course.clients.length >= course.prenotationMax" ng-click="reserve(course)" class="uk-button uk-button-small uk-button-primary">
                     Prenota
                 </button>
-                <button ng-show="prenotato(course)" ng-click="annullaPrenotazione(course)" class="uk-button uk-button-small uk-button-danger">
+                <button ng-show="alreadyReserved(course)" ng-click="cancelReservation(course)" class="uk-button uk-button-small uk-button-danger">
                     Annulla
                 </button>
             </td>

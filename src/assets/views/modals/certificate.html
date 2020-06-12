@@ -1,0 +1,21 @@
+<div id="certificate" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Rinnovo Certificato</h2>
+        <p>* Conservare copia del certificato medico</p>
+
+        <form name="certificateForm" novalidate>
+
+            <!-- Date -->
+            <div class="uk-margin">
+                <label class="uk-form-label" for="newCertificateDate">Data di scadenza: </label>
+                <input id="newCertificateDate" ng-model="newCertificateDate" name="newCertificateDate" class="uk-input uk-form-width-large" type="datetime-local" required/>
+            </div>
+
+        </form>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button" ng-click="addCertificate(client, newCertificateDate)" ng-disabled="certificateForm.$invalid">Save</button>
+        </p>
+    </div>
+</div>

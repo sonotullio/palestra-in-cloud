@@ -22,20 +22,19 @@ APP.controller('CoursesController', ['$rootScope', '$scope', '$state', '$statePa
 
         $scope.updateSearch();
 
-        $scope.prenotato = function(course) {
-            var prenotato = false;
+        $scope.alreadyReserved = function(course) {
+            var reserved = false;
 
-            course.clients.forEach(function (user) {
-                if (user.email == $scope.user.email) {
-                    console.log('prenotato: ' + course.sport + ' ' + course.startTime + ' - ' + $scope.user.email);
-                    prenotato = true;
+            course.clients.forEach(function (client) {
+                if (client.email == $scope.user.email) {
+                    reserved = true;
                 }
-            })
+            });
 
-            return prenotato;
-        }
+            return reserved;
+        };
 
-        $scope.prenota = function (course) {
+        $scope.reserve = function (course) {
             if ($scope.user) {
                 course.clients.push($scope.user);
                 CoursesService.save(course).then(function (success) {
@@ -49,14 +48,12 @@ APP.controller('CoursesController', ['$rootScope', '$scope', '$state', '$statePa
             }
         }
 
-        $scope.annullaPrenotazione = function (course) {
+        $scope.cancelReservation = function (course) {
             course.clients.forEach(function (user, index) {
                 if (user.email == $scope.user.email) {
                     course.clients.splice(index, 1);
                 }
             });
-
-            course.prenotation --;
 
             CoursesService.save(course).then(function (success) {
                 $scope.updateSearch();

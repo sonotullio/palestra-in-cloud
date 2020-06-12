@@ -3,7 +3,7 @@
         <h2 class="uk-modal-title">{{selectedCourse.sport}}  {{selectedCourse.startTime | date: 'hh:mm'}}</h2>
 
         <ul>
-            <li ng-repeat="client in selectedCourse.clients">{{client.name}} {{client.surname}} <span ng-show="user.admin">, {{client.phone}}</span></li>
+            <li ng-repeat="client in selectedCourse.clients">{{client.name}} {{client.surname}} <span ng-show="user.admin">, {{client.phone}} - {{client.email}}</span></li>
         </ul>
 
         <p class="uk-text-right">

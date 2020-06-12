@@ -1,0 +1,50 @@
+<div id="purchase" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Aggiungi nuovo prodotto</h2>
+
+        <form name="form" novalidate class="uk-form-stacked">
+
+            <div class="uk-margin" uk-grid>
+
+                <!-- Product -->
+                <div class="uk-width-1-2@l">
+                    <label class="uk-form-label" for="sport"> Scegli Prodotto </label>
+                    <select id="sport" class="uk-select" ng-model="purchase.product">
+                        <option ng-repeat="product in products" ng-value="product"> {{product.name}}</option>
+                    </select>
+                </div>
+
+                <!-- Duration -->
+                <div class="uk-width-1-2@l">
+                    <label class="uk-form-label" for="duration"> Duarata </label>
+                    <input id="duration" ng-model="purchase.product.duration" class="uk-input uk-form-width-large" type="number" step=".01" disabled/>
+                </div>
+            </div>
+
+            <div class="uk-margin" uk-grid>
+
+                <!-- Date -->
+                <div class="uk-width-1-3@l">
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="from">Data </label>
+                        <input id="from" ng-model="purchase.date" class="uk-input uk-form-width-large" type="date"
+                               min="{{lastSubscription.date | date: 'yyyy-MM-dd'}}" onkeydown="return false" required/>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="uk-width-1-3@l">
+                    <label class="uk-form-label" for="total">Totale Dovuto </label>
+                    <input id="total" ng-model="purchase.product.price" class="uk-input uk-form-width-large" type="number" step=".01" disabled required/>
+                </div>
+
+            </div>
+
+        </form>
+
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancella</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button" ng-click="addPurchase(purchase)" ng-disabled="!form.$valid">Aggiungi</button>
+        </p>
+    </div>
+</div>
