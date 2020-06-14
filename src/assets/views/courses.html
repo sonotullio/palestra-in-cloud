@@ -21,6 +21,10 @@
                     <input type="file" name="file" fileread="myFile" style="opacity: 0; width: 100%; height: 100%; position: absolute;  right: 0;  top: 0;" />
                 </span>
             </button>
+
+            <button ng-show="myFile" ng-click="uploadFile(myFile)" class="uk-button uk-button-success">
+                Carica
+            </button>
         </div>
     </nav>
 
@@ -43,7 +47,7 @@
                 <span> {{course.date | date: 'dd-MM-yyyy'}} </span>
             </td>
             <td>
-                <span> {{course.startTime | date: 'HH:mm'}} PM</span>
+                <span> {{course.startTime | date: 'HH:mm'}} </span>
             </td>
             <td>
                 <span> {{course.finishTime | date: 'HH:mm'}} </span>

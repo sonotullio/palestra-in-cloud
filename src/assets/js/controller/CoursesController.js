@@ -1,5 +1,5 @@
-APP.controller('CoursesController', ['$rootScope', '$scope', '$state', '$stateParams', 'CoursesService', 'UserService', '$filter', '$http',
-    function ($rootScope, $scope, $state, $stateParams, CoursesService, UserService, $filter, $http) {
+APP.controller('CoursesController', ['$rootScope', '$scope', '$state', '$stateParams', 'CoursesService', 'UserService', 'apiUrl', '$filter', '$http',
+    function ($rootScope, $scope, $state, $stateParams, CoursesService, UserService, apiUrl, $filter, $http) {
 
         $scope.user = UserService.get();
         $scope.today = new Date();

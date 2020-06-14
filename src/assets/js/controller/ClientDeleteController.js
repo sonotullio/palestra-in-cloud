@@ -6,7 +6,6 @@ APP.controller('ClientDeleteController', ['$scope', '$rootScope', '$state', '$st
                 alert(client.name + ' ' + client.surname + ' ha acquistato ' + $scope.purchasesCount + ' prodotti. Non è possibile rimuoverlo!')
             } else {
                 ClientService.delete(client).then(function (deleteSuccess) {
-                    UIkit.modal('#client-delete').hide();
                     $state.go('clientsList');
                 }, function (error) {
                     alert(error.data.message);

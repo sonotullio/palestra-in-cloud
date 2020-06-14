@@ -94,7 +94,9 @@
                         <button type="submit" class="uk-button uk-button-small uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
                     </div>
                     <div class="uk-margin">
+                        <!--
                         <button type="submit" class="uk-button uk-button-small uk-button-secondary" ng-click="addClient()">Registrati</button>
+                        -->
                     </div>
                 </form>
             </div>
@@ -106,7 +108,9 @@
                     <input ng-model="email" name="email" type="email" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.email.$touched && !myForm.email.$valid}" style="color: black !important;" placeholder="E-mail" required>
                     <input ng-model="password" name="password" type="password" class="uk-input uk-form-width-small" ng-class="{'uk-form-danger': myForm.password.$touched && !myForm.password.$valid}" style="color: black !important;" placeholder="Password" required>
                     <button type="submit" class="uk-button uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
+                    <!--
                     <button type="submit" class="uk-button uk-button-secondary" ng-click="addClient()">Registrati</button>
+                    -->
                 </form>
             </div>
         </div>
@@ -148,9 +152,11 @@
                     <div class="uk-margin">
                         <button type="submit" class="uk-button uk-button-small uk-button-primary" ng-click="accedi(email, password)" ng-disabled="!myForm.$valid">Accedi</button>
                     </div>
+                    <!--
                     <div class="uk-margin">
                         <button type="submit" class="uk-button uk-button-small uk-button-secondary" ng-click="addClient()">Registrati</button>
                     </div>
+                    -->
                 </form>
             </div>
         </div>
