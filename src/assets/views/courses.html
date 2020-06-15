@@ -47,10 +47,10 @@
                 <span> {{course.date | date: 'dd-MM-yyyy'}} </span>
             </td>
             <td>
-                <span> {{course.startTime | date: 'HH:mm'}} </span>
+                <span> {{course.startTime | date: 'HH:mm': 'UTC'}} </span>
             </td>
             <td>
-                <span> {{course.finishTime | date: 'HH:mm'}} </span>
+                <span> {{course.finishTime | date: 'HH:mm': 'UTC'}} </span>
             </td>
             <td>
                 <span> {{course.sport}} </span>
