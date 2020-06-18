@@ -1,7 +1,7 @@
 APP.controller('ClientsListController', ['$scope', 'ClientService', 'ColumnService',
     function($scope, ClientService, ColumnService) {
 
-        $scope.column = 'name';
+        $scope.column = 'surname';
 
         ClientService.getAll().then(function (success) {
             $scope.clients = success.data;

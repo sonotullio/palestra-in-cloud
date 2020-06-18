@@ -44,10 +44,7 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         name: 'client.registration',
         url: '/registration',
         controller: 'ClientRegistrationController',
-        templateUrl: 'modals/client-registration.html',
-        params: {
-            client: { squash: true, value: null },
-        },
+        templateUrl: 'modals/client-registration.html'
     }
 
     var clientDelete = {
@@ -93,6 +90,14 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         controller: 'PurchasesController',
     }
 
+    var purchaseDelete = {
+        name: 'purchases.delete',
+        url: '/delete',
+        templateUrl: 'purchase-delete.html',
+        //controller: 'PurchaseDeleteController',
+        modal: true
+    }
+
     var statistics = {
         name: 'statistics',
         url: '/statistics',
@@ -111,6 +116,7 @@ APP.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider.state(products);
     $stateProvider.state(courses);
     $stateProvider.state(purchases);
+    $stateProvider.state(purchaseDelete);
     $stateProvider.state(statistics);
 
     $urlRouterProvider.otherwise('/home');

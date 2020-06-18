@@ -9,6 +9,7 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
 
         ClientService.get($scope.clientId).then(function (success) {
             $scope.client = success.data;
+            $scope.client.dateOfBirth = new Date($scope.client.dateOfBirth);
 
             EntranceService.getAllByClientId($scope.client.id).then(function (success) {
                 $scope.entrances = EntranceService.getSplitted(success.data);
@@ -46,6 +47,19 @@ APP.controller('ClientController', ['$scope', '$stateParams', '$state', 'ClientS
             } else {
                 alert('Il cliente non è abilitato ad entrare. Limite di ingressi raggiunto o abbonamento scaduto!')
             }
+        }
+
+        $scope.openDeletePurchase = function(purchase) {
+            $scope.toBeDeleted = purchase;
+            UIkit.modal('#purchase-delete').show();
+        }
+
+        $scope.deletePurchase = function(purchase) {
+            PurchaseService.delete(purchase).then(function (success) {
+                $state.reload();
+            }, function (error) {
+                alert(error.data.message);
+            })
         }
 
         $scope.addEntrance = function(client, sport) {

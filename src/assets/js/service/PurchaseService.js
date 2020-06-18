@@ -55,11 +55,7 @@ APP.service('PurchaseService', ['$http', 'apiUrl', function ($http, apiUrl) {
     }
 
     self.delete = function (purchase) {
-        $http.delete(path + '/' + purchase.id).then(function (success) {
-            console.log('deleted: ', purchase.id)
-        }, function (error) {
-            console.log(error);
-        });
+        return $http.delete(path + '/' + purchase.id);
     }
 
 }]);

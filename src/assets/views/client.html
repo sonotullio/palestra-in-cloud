@@ -49,13 +49,49 @@
             <div class="uk-child-width-expand@s" uk-grid>
                 <div class="uk-first-column">
 
+                    <!-- Purchase Section -->
+                    <div class="uk-margin-large-bottom">
+                        <span class="uk-badge uk-margin-small-right">{{purchasesCount}}</span> <strong class="uk-margin-small-right"> Prodotti acquistati </strong>
+
+                        <!-- Tabs -->
+                        <div class="uk-margin-bottom">
+                            <ul class="uk-child-width-expand" uk-tab>
+                                <li ng-class="{'uk-active': isActiveProductTab('sport')}" ng-click="selectProductTab('sport')"><a>Sport</a></li>
+                                <li ng-class="{'uk-active': isActiveProductTab('merchandise')}" ng-click="selectProductTab('merchandise')"><a>Merchandise</a></li>
+                                <li ng-class="{'uk-active': isActiveProductTab('other')}" ng-click="selectProductTab('other')"><a>Altro</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
+                            <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrizione</th>
+                                <th>Prezzo</th>
+                                <th>Azioni</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="row in purchases[activeProductTab]">
+                                <td>{{row.date | date : 'dd MMM yyyy'}}</td>
+                                <td>{{row.product.description}}</td>
+                                <td>{{row.product.price | number: 2}} Euro</td>
+                                <td>
+                                    <button ng-click="openDeletePurchase(row)" class="uk-button uk-button-danger">Rimuovi</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!-- Entrance Section -->
-                    <div>
+                    <div class="uk-margin-large-bottom">
                         <span class="uk-badge uk-margin-small-right">{{entrances['weekly'].length}}</span> <strong class="uk-margin-small-right"> Ingressi questa settimana </strong>
                         <span ng-show="isEntrancesLimitReached(lastSubscription)" class="uk-margin uk-alert-danger"> {{maxEntranceMsg}} </span>
 
                         <!-- Tabs -->
-                        <div>
+                        <div class="uk-margin-bottom">
                             <ul class="uk-child-width-expand" uk-tab>
                                 <li ng-class="{'uk-active': isActiveTab('weekly')}" ng-click="selectTab('weekly')"><a>Questa Settimana</a></li>
                                 <li ng-class="{'uk-active': isActiveTab('old')}" ng-click="selectTab('old')"><a>Passati</a></li>
@@ -75,31 +111,6 @@
                         </table>
                     </div>
 
-                    <!-- Purchase Section -->
-                    <div>
-                        <span class="uk-badge uk-margin-small-right">{{purchasesCount}}</span> <strong class="uk-margin-small-right"> Prodotti acquistati </strong>
-
-                        <!-- Tabs -->
-                        <div>
-                            <ul class="uk-child-width-expand" uk-tab>
-                                <li ng-class="{'uk-active': isActiveProductTab('sport')}" ng-click="selectProductTab('sport')"><a>Sport</a></li>
-                                <li ng-class="{'uk-active': isActiveProductTab('merchandise')}" ng-click="selectProductTab('merchandise')"><a>Merchandise</a></li>
-                                <li ng-class="{'uk-active': isActiveProductTab('other')}" ng-click="selectProductTab('other')"><a>Altro</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Table -->
-                        <table class="uk-table uk-table-small uk-table-hover uk-table-divider">
-                            <tbody>
-                            <tr ng-repeat="row in purchases[activeProductTab]">
-                                <td>{{row.date | date : 'dd MMM yyyy'}}</td>
-                                <td>{{row.product.description}}</td>
-                                <td>{{row.product.price | number: 2}} Euro</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
                 </div>
 
             </div>
@@ -110,5 +121,6 @@
 <div ng-include="'modals/client-registration.html'" ng-controller="ClientRegistrationController"></div>
 <div ng-include="'modals/client-delete.html'" ng-controller="ClientDeleteController"></div>
 <div ng-include="'modals/purchase.html'"></div>
+<div ng-include="'modals/purchase-delete.html'"></div>
 <div ng-include="'modals/certificate.html'" ng-controller="ClientCertificateController"></div>
 <div ng-include="'modals/entrance.html'"></div>

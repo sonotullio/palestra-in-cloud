@@ -1,5 +1,6 @@
 var APP = angular.module('app', [
     'ui.router',
+    'ui.router.modal',
     'app.config',
 ]);
 
