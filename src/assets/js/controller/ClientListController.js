@@ -1,10 +1,13 @@
-APP.controller('ClientsListController', ['$scope', 'ClientService', 'ColumnService',
-    function($scope, ClientService, ColumnService) {
+APP.controller('ClientsListController', ['$scope', '$rootScope', 'ClientService', 'ColumnService',
+    function($scope, $rootScope, ClientService, ColumnService) {
 
-        $scope.column = 'surname';
+        $scope.column = 'expirationDate';
 
         ClientService.getAll().then(function (success) {
             $scope.clients = success.data;
+            $scope.clients.forEach(function (client) {
+                ClientService.setStatus(client, $rootScope.date);
+            });
         }, function (error) {
             console.log('error: ', error);
         });

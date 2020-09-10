@@ -26,6 +26,7 @@
                 <th ng-click="sortColumn('id')">id</th>
                 <th ng-click="sortColumn('name')">nome</th>
                 <th ng-click="sortColumn('surname')">cognome</th>
+                <th ng-click="sortColumn('expirationDate')">scadenza</th>
                 <th ng-click="sortColumn('email')">email</th>
                 <th ng-click="sortColumn('phone')">cellulare</th>
                 <th ng-click="sortColumn('dateOfBirth')">data di nascita</th>
@@ -33,7 +34,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse">
+            <tr ng-repeat="client in clients | filter: search | orderBy:column:reverse" ng-class="{'uk-alert-danger': client.isExpired}">
                 <td ui-sref="client({clientId: client.id})">
                     <a class="uk-link-heading"> {{client.id}} </a>
                 </td>
@@ -42,6 +43,9 @@
                 </td>
                 <td>
                     <span >{{client.surname}}</span>
+                </td>
+                <td>
+                    <span >{{client.expirationDate | date: 'dd-MM-yyyy'}}</span>
                 </td>
                 <td>
                     <span >{{client.email}}</span>
